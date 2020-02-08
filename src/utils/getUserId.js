@@ -5,7 +5,6 @@ const getUserId = (request, requireAuth = true) => {
     ? request.request.headers.authorization
     : request.connection.context.Authorization;
 
-  //stop if no header
   if (header) {
     //strip out Bearer
     const token = header.replace("Bearer ", "");
