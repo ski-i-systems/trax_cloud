@@ -50,7 +50,7 @@ type Mutation {
   loginUser(data: LoginUserInput!): AuthPayload!
   updateUser(data: UpdateUserInput!): User!
   createOrganisation(data: CreateOrganisationInput!): OrgPayload!
-  createFile(data: CreateFileInput!): FilePayload!
+  createFile(data: CreateFileInput!, fields: [CreateFileTags]): FilePayload!
 }
 
 input CreateUserInput {
@@ -77,6 +77,10 @@ input CreateOrganisationInput {
 input CreateFileInput {
   organisation: String!
   documentType: String
+}
+input CreateFileTags {
+  key: String
+  value: String
 }
 
 type AuthPayload {
