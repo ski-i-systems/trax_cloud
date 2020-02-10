@@ -1,6 +1,11 @@
+const { hashPassword } = require("../../utils/hashPassword");
+
 module.exports = {
   Query: {
-    Organisations: (parent, args, ctx, info) => ctx.models.organisation.find({})
+    Organisations: (parent, args, ctx, info) =>    {
+       console.log('req is ' + ctx.req);   
+      return ctx.models.organisation.find({})
+    }
   },
   Mutation: {
     createOrganisation: async (parent, args, ctx, info) => {
@@ -15,9 +20,10 @@ module.exports = {
         //First parameter in then function is a method hit IF previous call was success. It returns the created organisation in this case. Marked as org here.
          async (org) => {
         organisation = org;
+        const newPW = await  hashPassword(data.adminPassword);
         await ctx.models.user.create({
            name: data.adminName,
-           password: data.adminPassword,
+           password:  newPW,
            email: data.adminEmail,
            //Set the organisation id to this user....
            organisationID: org._id

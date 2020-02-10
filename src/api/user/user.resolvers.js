@@ -30,6 +30,8 @@ module.exports = {
         throw new Error("unable to login");
       }
 
+      console.log('password is : ' + password);
+      console.log('user.password is :' + user.password);
       const isMatch = await bcrypt.compare(password, user.password);
 
       if (!isMatch) {
