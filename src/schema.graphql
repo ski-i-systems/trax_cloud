@@ -72,6 +72,9 @@ input UpdateUserInput {
 
 input CreateOrganisationInput {
   name: String!
+  adminName: String!
+  adminEmail: String!
+  adminPassword: String!
 }
 
 input CreateFileInput {
@@ -89,6 +92,7 @@ type AuthPayload {
 }
 type OrgPayload {
   organisation: Organisation!
+  adminUser: User!
 }
 
 type FilePayload {

@@ -12,11 +12,12 @@ module.exports = {
     createUser: async (parent, args, ctx, info) => {
       const { data } = args;
       const password = await hashPassword(data.password);
-      const { name, email } = data;
+      const { name, email, organisationID } = data;
       const user = await ctx.models.user.create({
         name,
         email,
-        password
+        password,
+        organisationID
       });
       console.log(user);
       return { user, token: generateToken(user.id) };

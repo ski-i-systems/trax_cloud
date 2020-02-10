@@ -11,6 +11,7 @@ mongoose.connect("mongodb://127.0.0.1:27017/trax_cloud", {
   useFindAndModify: false,
   useCreateIndex: true
 });
+
 const server = new GraphQLServer({
   typeDefs: "./src/schema.graphql",
   resolvers: lodash.merge(
