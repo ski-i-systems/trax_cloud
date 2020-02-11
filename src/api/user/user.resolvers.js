@@ -23,24 +23,13 @@ module.exports = {
     },
     loginUser: async (parent, args, ctx, info) => {
       const { email, password } = args.data;
-      //const user =
-      let isMatch;
-      let user;
-      await ctx.models.user.findOne({ email: email }).then(
-        async userResult => {
-          isMatch = await bcrypt.compare(password, userResult.password);
-          user = userResult;
-        },
-        reasonForfailure => {
-          console.log("here is the reason", reasonForfailure);
-        }
-      );
+      const user = await ctx.models.user.findOne({ email: email });
 
-      // if (!user) {
-      //   throw new Error("unable to login");
-      // }
+      if (!user) {
+        throw new Error("unable to login");
+      }
 
-      //const isMatch = await bcrypt.compare(password, user.password);
+      const isMatch = await bcrypt.compare(password, user.password);
 
       if (!isMatch) {
         throw new Error("unable to login user");
