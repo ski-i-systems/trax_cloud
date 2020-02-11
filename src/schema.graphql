@@ -3,6 +3,7 @@ type Query {
   Users: [User]!
   Organisations: [Organisation]!
   Files: [File]!
+  Organisation(name:String!):Organisation
 }
 
 type User {
