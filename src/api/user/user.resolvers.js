@@ -5,8 +5,7 @@ const bcrypt = require("bcryptjs");
 module.exports = {
   Query: {
     Greeting: () => `Hello World`,
-    Users: (parent, args, ctx, info) => ctx.models.user.find({}),
-    
+    Users: (parent, args, ctx, info) => ctx.models.user.find({})
   },
   Mutation: {
     createUser: async (parent, args, ctx, info) => {
@@ -24,13 +23,24 @@ module.exports = {
     },
     loginUser: async (parent, args, ctx, info) => {
       const { email, password } = args.data;
-      const user = await ctx.models.user.findOne({ email: email });
+      //const user =
+      let isMatch;
+      let user;
+      await ctx.models.user.findOne({ email: email }).then(
+        async userResult => {
+          isMatch = await bcrypt.compare(password, userResult.password);
+          user = userResult;
+        },
+        reasonForfailure => {
+          console.log("here is the reason", reasonForfailure);
+        }
+      );
 
-      if (!user) {
-        throw new Error("unable to login");
-      }
+      // if (!user) {
+      //   throw new Error("unable to login");
+      // }
 
-      const isMatch = await bcrypt.compare(password, user.password);
+      //const isMatch = await bcrypt.compare(password, user.password);
 
       if (!isMatch) {
         throw new Error("unable to login user");
@@ -40,8 +50,6 @@ module.exports = {
         token: generateToken(user.id)
       };
     },
-    updateUser: () => {},
-
-  
+    updateUser: () => {}
   }
 };
