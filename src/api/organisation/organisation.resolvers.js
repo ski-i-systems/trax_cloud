@@ -14,7 +14,8 @@ module.exports = {
       // as well as create an administrator, encrypt his password and return the expected output for graphql.
       let result = await ctx.models.organisation.createNewOrganisation({userSchema: ctx.models.user, userData: data});
       
-      //console.log(test);
+      console.log('result is: '+ result);
+
       return result;
     }
   }

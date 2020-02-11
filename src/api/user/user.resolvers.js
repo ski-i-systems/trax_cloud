@@ -22,6 +22,13 @@ module.exports = {
       console.log(user);
       return { user, token: generateToken(user.id) };
     },
+    createUserSecond: async (parent, args, ctx, info) => {
+      const { data } = args;
+      const userAndToken = await ctx.models.user.createNewUser(data)
+      console.log(userAndToken);
+      return userAndToken;
+      
+    },
     loginUser: async (parent, args, ctx, info) => {
       const { email, password } = args.data;
       const user = await ctx.models.user.findOne({ email: email });

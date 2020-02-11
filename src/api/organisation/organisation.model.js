@@ -30,11 +30,12 @@ organisationSchema.statics.createNewOrganisation = async function(details) {
         //If it does that succesfully, assign those values to the returning variables
           organisation = newOrganisation;
           adminUser = createdUser;
-          //And because we used new instead of create, don't forget to save the document to the database.
+          //And because we used new instead of create, don't forget to save the document to the database
           newOrganisation.save();
       })
       .catch(err => {
         //Any hassle, throw the error up the chain so graphql displays whats wrong.
+        console.log('err is ' + err);
         throw err;
       })
 
@@ -54,6 +55,7 @@ organisationSchema.methods.createAdministrator = async function createAdministra
 
   //Attempt to hash the password first, if successful, create the user and assign him an organisation id using "this._id"
   await hashPassword(adminPassword).then(async (hashedPassword) => {
+    console.log('about to create user');
       await userSchema.create({
         name: adminName,
         password: hashedPassword,
@@ -66,7 +68,10 @@ organisationSchema.methods.createAdministrator = async function createAdministra
           //ps, There must be a better way of doing this, like surely we should be able to return from this point...Need more research on promises
           //but for now it gets the code up and running.
           newAdminUser = newUser
-        });
+        })
+    }).catch(err => {
+      console.log('Overall error is: '+ err);
+      throw err;
     });
   //And return here.
   return newAdminUser;

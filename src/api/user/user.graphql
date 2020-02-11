@@ -16,6 +16,7 @@ type User {
   password: String!
   createdAt: String
   updatedAt: String
+  organisationID: ID!
 }
 
 type AuthPayload {
