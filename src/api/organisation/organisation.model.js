@@ -5,7 +5,7 @@ const { hashPassword } = require("../../utils/hashPassword");
 const organisationSchema = new Schema(
   {
     name: { type: String, required: true, unique: true },
-    active : Boolean
+    active: Boolean
   },
   { timestamps: true }
 );
@@ -16,15 +16,19 @@ const organisationSchema = new Schema(
 
 organisationSchema.statics.createNewOrganisation = async function(details) {
   //Declare a model of organisation.
-  let Organisation = mongoose.model('Organisation', organisationSchema);
+  let Organisation = mongoose.model("Organisation", organisationSchema);
   //Create a new Organisation with data defined by the details passed.
-  let newOrganisation = new Organisation({ name: details.userData.name, active : true });
+  let newOrganisation = new Organisation({
+    name: details.userData.name,
+    active: true
+  });
 
   //These are just return values to be assigned to.
   //Again, there must be a better way of doing this, I just don't know what that is yet.
   let organisation, adminUser;
 
   //Now we have an instance of an organisation, ask it to create an administrator for itself, with the method defined below
+<<<<<<< HEAD
    await newOrganisation.createAdministrator({userSchema: details.userSchema, userData: details.userData})
       .then(async (createdUser) => {
         //If it does that succesfully, assign those values to the returning variables
@@ -38,30 +42,57 @@ organisationSchema.statics.createNewOrganisation = async function(details) {
         console.log('err is ' + err);
         throw err;
       })
+=======
+  await newOrganisation
+    .createAdministrator({
+      userSchema: details.userSchema,
+      userData: details.userData
+    })
+    .then(async createdUser => {
+      //If it does that succesfully, assign those values to the returning variables
+      organisation = newOrganisation;
+      adminUser = createdUser;
+      //And because we used new instead of create, don't forget to save the document to the database.
+      newOrganisation.save();
+    })
+    .catch(err => {
+      //Any hassle, throw the error up the chain so graphql displays whats wrong.
+      throw err;
+    });
+>>>>>>> 6128d7df77c67fc531b405e2385529dc980aee54
 
-      //Error handling still required below, but need some study around best practice for this.
-  return {organisation, adminUser};
+  //Error handling still required below, but need some study around best practice for this.
+  return { organisation, adminUser };
 };
 
 //#endregion
 
 //#region Instance Methods
-organisationSchema.methods.createAdministrator = async function createAdministrator (data) {
+organisationSchema.methods.createAdministrator = async function createAdministrator(
+  data
+) {
   //This is an instance method, so we have an organisation created, now we can call methods while referring to it with the "this" keyword.
   //Below is a breakdown of the variables passed into the method required.
-  let {userSchema} = data;
-  let {adminName, adminEmail, adminPassword} = data.userData;
+  let { userSchema } = data;
+  let { adminName, adminEmail, adminPassword } = data.userData;
   let newAdminUser;
 
   //Attempt to hash the password first, if successful, create the user and assign him an organisation id using "this._id"
+<<<<<<< HEAD
   await hashPassword(adminPassword).then(async (hashedPassword) => {
     console.log('about to create user');
       await userSchema.create({
+=======
+  await hashPassword(adminPassword).then(async hashedPassword => {
+    await userSchema
+      .create({
+>>>>>>> 6128d7df77c67fc531b405e2385529dc980aee54
         name: adminName,
         password: hashedPassword,
         email: adminEmail,
         //Set this organisations id to this user....
         organisationID: this._id
+<<<<<<< HEAD
         })
         .then(newUser => {
           //assign variable to the newAdminUser 
@@ -73,10 +104,27 @@ organisationSchema.methods.createAdministrator = async function createAdministra
       console.log('Overall error is: '+ err);
       throw err;
     });
+=======
+      })
+      .then(newUser => {
+        //assign variable to the newAdminUser
+        //ps, There must be a better way of doing this, like surely we should be able to return from this point...Need more research on promises
+        //but for now it gets the code up and running.
+        newAdminUser = newUser;
+      });
+  });
+>>>>>>> 6128d7df77c67fc531b405e2385529dc980aee54
   //And return here.
   return newAdminUser;
 };
 
 //#endregion
+
+//statis method to find organisation by name
+organisationSchema.statics.findByName = (name, callback) => {
+
+  let Organisation = mongoose.model("Organisation", organisationSchema);
+  return Organisation.findOne(name, callback);
+};
 
 module.exports = mongoose.model("organisations", organisationSchema);

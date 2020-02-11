@@ -5,8 +5,7 @@ const bcrypt = require("bcryptjs");
 module.exports = {
   Query: {
     Greeting: () => `Hello World`,
-    Users: (parent, args, ctx, info) => ctx.models.user.find({}),
-    
+    Users: (parent, args, ctx, info) => ctx.models.user.find({})
   },
   Mutation: {
     createUser: async (parent, args, ctx, info) => {
@@ -37,8 +36,6 @@ module.exports = {
         throw new Error("unable to login");
       }
 
-      console.log('password is : ' + password);
-      console.log('user.password is :' + user.password);
       const isMatch = await bcrypt.compare(password, user.password);
 
       if (!isMatch) {
@@ -49,8 +46,6 @@ module.exports = {
         token: generateToken(user.id)
       };
     },
-    updateUser: () => {},
-
-  
+    updateUser: () => {}
   }
 };
