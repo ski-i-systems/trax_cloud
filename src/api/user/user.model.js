@@ -16,7 +16,7 @@ const userSchema = new Schema(
 userSchema.statics.createNewUser = async function(userDetails) {
   //Declare a model of User.
   let User = mongoose.model('User', userSchema);
-  const { name, email, /*organisationID,*/ password } = userDetails;
+  const { name, email, organisationID, password } = userDetails;
   //Create a new User with data defined by the details passed.
 
   //organisationId can be garnered from the logged in user when we are passing it in the request object.

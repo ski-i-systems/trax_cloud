@@ -6,7 +6,7 @@ module.exports = {
   Mutation: {
     createFile: async (parent, args, { req, models }, info) => {
       const userId = getUserId(req);
-      const user = await models.user.findOne({ _id: userId });
+      const user = await models.user.findOne({ _id: git userId });
       const { organisation, documentType } = args.data;
 
       if (user) {

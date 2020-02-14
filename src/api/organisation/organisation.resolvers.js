@@ -17,19 +17,10 @@ module.exports = {
       const { data } = args;
       //Below is a static method defined in the organisatin model. It will create a new organisation in the db for us,
       // as well as create an administrator, encrypt his password and return the expected output for graphql.
-<<<<<<< HEAD
       let result = await ctx.models.organisation.createNewOrganisation({userSchema: ctx.models.user, userData: data});
       
       console.log('result is: '+ result);
 
-=======
-      let result = await ctx.models.organisation.createNewOrganisation({
-        userSchema: ctx.models.user,
-        userData: data
-      });
-
-      //console.log(test);
->>>>>>> 6128d7df77c67fc531b405e2385529dc980aee54
       return result;
     }
   }
