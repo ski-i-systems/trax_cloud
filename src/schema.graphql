@@ -3,7 +3,7 @@ type Query {
   Users: [User]!
   Organisations: [Organisation]!
   Files: [File]!
-  Organisation(name:String!):Organisation
+  Organisation(name: String!): Organisation
 }
 
 type User {
@@ -15,8 +15,6 @@ type User {
   updatedAt: String
   organisationID: ID!
 }
-
-
 
 type Organisation {
   id: ID
@@ -51,12 +49,15 @@ type Note {
 
 type Mutation {
   createUser(data: CreateUserInput): AuthPayload!
-  createUserSecond(data: CreateUserInput): AuthPayload!
   loginUser(data: LoginUserInput!): AuthPayload!
   updateUser(data: UpdateUserInput!): User!
   createOrganisation(data: CreateOrganisationInput!): OrgPayload!
   createFile(data: CreateFileInput!, fields: [CreateFileTags]): FilePayload!
-  updateFile(_id:ID!,data:CreateFileInput,fields:[CreateFileTags]):FilePayload!
+  updateFile(
+    _id: ID!
+    data: CreateFileInput
+    fields: [CreateFileTags]
+  ): FilePayload!
 }
 
 input CreateUserInput {
@@ -86,7 +87,6 @@ input CreateOrganisationInput {
 input CreateFileInput {
   organisation: String!
   documentType: String
-  
 }
 input CreateFileTags {
   key: String

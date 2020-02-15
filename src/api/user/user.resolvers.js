@@ -1,7 +1,7 @@
 const { hashPassword } = require("../../utils/hashPassword");
 const { generateToken } = require("../../utils/generateToken");
+const { getUserId } = require("../../utils/getUserId");
 const bcrypt = require("bcryptjs");
-
 module.exports = {
   Query: {
     Greeting: () => `Hello World`,
@@ -10,28 +10,39 @@ module.exports = {
   Mutation: {
     createUser: async (parent, args, ctx, info) => {
       const { data } = args;
-      //decrypt token to get user and org
-      const password = await hashPassword(data.password);
-      const { name, email, organisationID } = data;
-      const user = await ctx.models.user.create({
-        name,
-        email,
-        password,
-        organisationID
-      });
-      console.log(user);
-      return { user, token: generateToken(user.id) };
-    },
-    createUserSecond: async (parent, args, ctx, info) => {
-      const { data } = args;
-      
+      console.log("data", data);
 
-      const userAndToken = await ctx.models.user.createNewUser(data)
-      console.log(userAndToken);
-      return userAndToken;
-      
+      const userId = getUserId(ctx.req);
+
+      const user = await ctx.models.user.findUser(userId);
+      if (user) {
+        const newUser = {
+          ...data,
+          organisationID: user.organisationID
+        };
+        console.log("newUser", newUser);
+        const userAndToken = await ctx.models.user.createNewUser(newUser);
+
+        return userAndToken;
+      }
     },
-   
+    loginUser: async (parent, args, ctx, info) => {
+      const { email, password } = args.data;
+      const user = await ctx.models.user.findOne({ email: email });
+
+      if (!user) {
+        throw new Error("unable to login");
+      }
+      const isMatch = await bcrypt.compare(password, user.password);
+
+      if (!isMatch) {
+        throw new Error("unable to login user");
+      }
+      return {
+        user,
+        token: generateToken(user.id)
+      };
+    },
     updateUser: () => {}
   }
 };
