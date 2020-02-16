@@ -42,9 +42,19 @@ module.exports = {
       };
     },
     updateUser: async (parent, args, ctx, info) => {
-      const { data } = args;
+      let { data } = args;
 
       const userId = getUserId(ctx.req);
+
+      if (data.password) {
+        console.log("im in here");
+        passResult = await hashPassword(data.password);
+        data = {
+          ...data,
+          password: passResult
+        };
+      }
+      console.log("data", data);
 
       if (userId) {
         await ctx.models.user.findOneAndUpdate(
@@ -55,8 +65,8 @@ module.exports = {
             if (err) return err;
           }
         );
+        return await ctx.models.user.findUser(userId);
       }
-      return await ctx.models.user.findUser(userId);
     }
   }
 };
