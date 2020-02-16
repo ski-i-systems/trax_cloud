@@ -14,6 +14,7 @@ type User {
   createdAt: String
   updatedAt: String
   organisationID: ID!
+  active: Boolean
 }
 
 type Organisation {
@@ -75,6 +76,7 @@ input UpdateUserInput {
   name: String
   email: String
   password: String
+  active: Boolean
 }
 
 input CreateOrganisationInput {

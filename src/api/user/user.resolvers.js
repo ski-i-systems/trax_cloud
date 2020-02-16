@@ -10,8 +10,6 @@ module.exports = {
   Mutation: {
     createUser: async (parent, args, ctx, info) => {
       const { data } = args;
-      console.log("data", data);
-
       const userId = getUserId(ctx.req);
 
       const user = await ctx.models.user.findUser(userId);
@@ -20,7 +18,7 @@ module.exports = {
           ...data,
           organisationID: user.organisationID
         };
-        console.log("newUser", newUser);
+
         const userAndToken = await ctx.models.user.createNewUser(newUser);
 
         return userAndToken;
@@ -43,6 +41,22 @@ module.exports = {
         token: generateToken(user.id)
       };
     },
-    updateUser: () => {}
+    updateUser: async (parent, args, ctx, info) => {
+      const { data } = args;
+
+      const userId = getUserId(ctx.req);
+
+      if (userId) {
+        await ctx.models.user.findOneAndUpdate(
+          userId,
+          data,
+          { upsert: false },
+          function(err, doc) {
+            if (err) return err;
+          }
+        );
+      }
+      return await ctx.models.user.findUser(userId);
+    }
   }
 };
