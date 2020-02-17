@@ -43,30 +43,38 @@ module.exports = {
     },
     updateUser: async (parent, args, ctx, info) => {
       let { data } = args;
-
       const userId = getUserId(ctx.req);
 
-      if (data.password) {
-        console.log("im in here");
-        passResult = await hashPassword(data.password);
-        data = {
-          ...data,
-          password: passResult
-        };
-      }
-      console.log("data", data);
+      //TODO Validate permissions here...
 
+
+      if(userId){
+        return await ctx.models.user.updateUser(data);    
+      }
+    },
+    deleteUser: async(parent,args,ctx,info) => {
+      let { data } = args; 
+      
+      const userId = getUserId(ctx.req);
+
+      console.log('data is ', data);
+
+      //Should have a permissions check here along this chain....
+      let retVal = {};
       if (userId) {
-        await ctx.models.user.findOneAndUpdate(
-          userId,
+        //update this to updateandremove
+        await ctx.models.user.findOneAndRemove(
           data,
-          { upsert: false },
           function(err, doc) {
             if (err) return err;
+            
+            console.log('doc is : ' + doc)
+            retVal = doc;
           }
         );
-        return await ctx.models.user.findUser(userId);
       }
+      return retVal;
+
     }
   }
 };

@@ -14,6 +14,9 @@ const userSchema = new Schema(
   { timestamps: true }
 );
 
+
+
+
 userSchema.statics.createNewUser = async function(userDetails) {
   //Declare a model of User.
   let User = mongoose.model("User", userSchema);
@@ -39,13 +42,34 @@ userSchema.statics.createNewUser = async function(userDetails) {
   return { user, token: generateToken(user.id) };
 };
 
-userSchema.statics.updateUser = async () => {
+userSchema.statics.updateUser = async (data) => {
+
+  let UserModel = mongoose.model("User", userSchema);
+
+  if (data.password) {
+    passResult = await hashPassword(data.password);
+    data = {
+      ...data,
+      password: passResult
+    };
+  }
+  
+    let User = await UserModel.findOneAndUpdate(
+      data._id,
+      data,
+      { upsert: false, new: true },
+      async (err, User) => {
+        if (err) return err;
+        console.log('user is ' + User)
+      }
+    )
+    return  User ;
   
 };
-
 
 userSchema.statics.findUser = async (userId, callback) => {
   const user = mongoose.model("User", userSchema);
   return user.findOne({ _id: userId }, callback);
-};
+}; 
+
 module.exports = mongoose.model("users", userSchema);
