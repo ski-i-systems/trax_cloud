@@ -77,7 +77,6 @@ userSchema.statics.deleteUser = async userId => {
       if (err) return err;
 
       console.log("doc is : " + doc);
-      retVal = doc;
     });
   }
   return deletedUser;
