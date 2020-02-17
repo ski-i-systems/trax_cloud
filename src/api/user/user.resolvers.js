@@ -4,7 +4,8 @@ const { getUserId } = require("../../utils/getUserId");
 const bcrypt = require("bcryptjs");
 module.exports = {
   Query: {
-    Users: (parent, args, ctx, info) => ctx.models.user.find({})
+    Users: (parent, args, ctx, info) => ctx.models.user.find({}),
+    usersByOrg: (parent,args,ctx,info) => ctx.models.user.find({organisationID:args.id})
   },
   Mutation: {
     createUser: async (parent, args, ctx, info) => {
@@ -45,35 +46,18 @@ module.exports = {
       const userId = getUserId(ctx.req);
 
       //TODO Validate permissions here...
-
-
-      if(userId){
-        return await ctx.models.user.updateUser(data);    
+      if (userId) {
+        return await ctx.models.user.updateUser(data);
       }
     },
-    deleteUser: async(parent,args,ctx,info) => {
-      let { data } = args; 
-      
+    deleteUser: async (parent, args, ctx, info) => {
+      let { data } = args;
       const userId = getUserId(ctx.req);
-
-      console.log('data is ', data);
-
       //Should have a permissions check here along this chain....
-      let retVal = {};
+      console.log("data is ", data);
       if (userId) {
-        //update this to updateandremove
-        await ctx.models.user.findOneAndRemove(
-          data,
-          function(err, doc) {
-            if (err) return err;
-            
-            console.log('doc is : ' + doc)
-            retVal = doc;
-          }
-        );
+        return await ctx.models.user.deleteUser(data.id);
       }
-      return retVal;
-
     }
   }
 };

@@ -14,9 +14,6 @@ const userSchema = new Schema(
   { timestamps: true }
 );
 
-
-
-
 userSchema.statics.createNewUser = async function(userDetails) {
   //Declare a model of User.
   let User = mongoose.model("User", userSchema);
@@ -41,9 +38,11 @@ userSchema.statics.createNewUser = async function(userDetails) {
 
   return { user, token: generateToken(user.id) };
 };
-
-userSchema.statics.updateUser = async (data) => {
-
+userSchema.statics.findUser = async (userId, callback) => {
+  const user = mongoose.model("User", userSchema);
+  return user.findOne({ _id: userId }, callback);
+};
+userSchema.statics.updateUser = async data => {
   let UserModel = mongoose.model("User", userSchema);
 
   if (data.password) {
@@ -53,23 +52,34 @@ userSchema.statics.updateUser = async (data) => {
       password: passResult
     };
   }
-  
-    let User = await UserModel.findOneAndUpdate(
-      data._id,
-      data,
-      { upsert: false, new: true },
-      async (err, User) => {
-        if (err) return err;
-        console.log('user is ' + User)
-      }
-    )
-    return  User ;
-  
+
+  return await UserModel.findOneAndUpdate(
+    data.id,
+    data,
+    { upsert: false, new: true },
+    async (err, User) => {
+      if (err) return err;
+      console.log("user is " + User);
+    }
+  );
+
+  // console.log("User", User);
+
+  // return User;
 };
 
-userSchema.statics.findUser = async (userId, callback) => {
-  const user = mongoose.model("User", userSchema);
-  return user.findOne({ _id: userId }, callback);
-}; 
+userSchema.statics.deleteUser = async userId => {
+  let UserModel = mongoose.model("User", userSchema);
+  let deletedUser = await UserModel.findUser(userId);
+  if (deletedUser) {
+    //update this to updateandremove
+    await UserModel.findByIdAndRemove(userId, function(err, doc) {
+      if (err) return err;
+
+      console.log("doc is : " + doc);
+    });
+  }
+  return deletedUser;
+};
 
 module.exports = mongoose.model("users", userSchema);
