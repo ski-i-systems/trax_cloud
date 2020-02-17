@@ -1,6 +1,7 @@
 type Query {
   Greeting: String
   Users: [User]!
+  usersByOrg(id: String!): [User]!
   Organisations: [Organisation]!
   Files: [File]!
   Organisation(name: String!): Organisation
@@ -52,7 +53,7 @@ type Mutation {
   createUser(data: CreateUserInput): AuthPayload!
   deleteUser(data: DeleteUserInput!): User!
   loginUser(data: LoginUserInput!): AuthPayload!
-  updateUser(data: UpdateUserInput! ): User!
+  updateUser(data: UpdateUserInput!): User!
   createOrganisation(data: CreateOrganisationInput!): OrgPayload!
   createFile(data: CreateFileInput!, fields: [CreateFileTags]): FilePayload!
   updateFile(
@@ -78,7 +79,7 @@ input LoginUserInput {
 }
 
 input UpdateUserInput {
-  id:ID!
+  id: ID!
   name: String
   email: String
   password: String

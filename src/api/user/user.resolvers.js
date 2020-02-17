@@ -5,7 +5,8 @@ const bcrypt = require("bcryptjs");
 module.exports = {
   Query: {
     Greeting: () => `Hello World`,
-    Users: (parent, args, ctx, info) => ctx.models.user.find({})
+    Users: (parent, args, ctx, info) => ctx.models.user.find({}),
+    usersByOrg: (parent,args,ctx,info) => ctx.models.user.find({organisationID:args.id})
   },
   Mutation: {
     createUser: async (parent, args, ctx, info) => {
