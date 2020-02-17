@@ -1,3 +1,5 @@
+const { getUserId } = require("../../utils/getUserId");
+
 module.exports = {
   Query: {
     Organisations: (parent, args, ctx, info) => {

@@ -4,7 +4,6 @@ const { getUserId } = require("../../utils/getUserId");
 const bcrypt = require("bcryptjs");
 module.exports = {
   Query: {
-    Greeting: () => `Hello World`,
     Users: (parent, args, ctx, info) => ctx.models.user.find({})
   },
   Mutation: {

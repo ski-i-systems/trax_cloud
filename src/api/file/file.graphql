@@ -1,0 +1,51 @@
+extend type Query {
+  Files: [File]!
+}
+
+
+extend type Mutation {
+  createFile(data: CreateFileInput!, fields: [CreateFileTags]): FilePayload!
+  updateFile(
+    _id: ID!
+    data: CreateFileInput
+    fields: [CreateFileTags]
+  ): FilePayload!
+}
+
+type File {
+  id: ID
+  creator: String!
+  organisation: String!
+  documentType: String
+  fields: [FieldTag]
+  notes: [Note]
+  createdAt: String
+  updatedAt: String
+}
+
+type Note {
+  id: ID
+  noteCreator: String
+  noteText: String
+  createdAt: String
+  updateAt: String
+}
+
+type FieldTag {
+  key: String
+  value: String
+}
+
+
+input CreateFileInput {
+  organisation: String!
+  documentType: String
+}
+input CreateFileTags {
+  key: String
+  value: String
+}
+
+type FilePayload {
+  file: File!
+}

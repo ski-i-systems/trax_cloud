@@ -1,0 +1,28 @@
+extend type Query {
+  Organisations: [Organisation]!
+  Organisation(name: String!): Organisation
+}
+
+type Organisation {
+  id: ID
+  name: String
+  createdAt: String
+  updatedAt: String
+}
+
+extend type Mutation {
+  createOrganisation(data: CreateOrganisationInput!): OrgPayload!
+}
+
+input CreateOrganisationInput {
+  name: String!
+  adminName: String!
+  adminEmail: String!
+  adminPassword: String!
+}
+
+type OrgPayload {
+  organisation: Organisation!
+  adminUser: User!
+}
+

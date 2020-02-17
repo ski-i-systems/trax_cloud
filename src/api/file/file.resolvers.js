@@ -1,4 +1,5 @@
 const { getUserId } = require("../../utils/getUserId");
+
 module.exports = {
   Query: {
     Files: (parent, args, ctx, info) => ctx.models.file.find({})
