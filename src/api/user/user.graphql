@@ -1,5 +1,6 @@
 type Query {
   Users: [User]!
+  usersByOrg(id: String!): [User]!
 }
 
 type User {
