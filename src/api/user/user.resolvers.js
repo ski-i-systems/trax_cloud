@@ -26,7 +26,8 @@ module.exports = {
     },
     loginUser: async (parent, args, ctx, info) => {
       const { email, password } = args.data;
-      const user = await ctx.models.user.findOne({ email: email });
+
+      const user = await ctx.models.user.findOne({ email: email.toLowerCase() });
 
       if (!user) {
         throw new Error("unable to login");

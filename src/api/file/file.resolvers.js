@@ -2,7 +2,7 @@ const { getUserId } = require("../../utils/getUserId");
 
 module.exports = {
   Query: {
-    FilesOld: (parent, args, ctx, info) => ctx.models.file.find({}),
+    //FilesOld: (parent, args, ctx, info) => ctx.models.file.find({}),
     Files: (parent, args, ctx, info) => ctx.models.file.find({organisationID: args.organisationID})
   },
   Mutation: {

@@ -64,7 +64,7 @@ organisationSchema.methods.createAdministrator = async function createAdministra
       await userSchema.create({
         name: adminName,
         password: hashedPassword,
-        email: adminEmail,
+        email: adminEmail.toLower(),
         //Set this organisations id to this user....
         organisationID: this._id
         })

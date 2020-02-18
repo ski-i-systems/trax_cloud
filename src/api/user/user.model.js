@@ -23,7 +23,9 @@ userSchema.statics.createNewUser = async function(userDetails) {
   //organisationId can be garnered from the logged in user when we are passing it in the request object.
   //Not there at the moment so hardcoding here for the moment
 
-  let user = new User({ name, email, organisationID, active: true });
+  let emailLower = email.toLowerCase();
+  
+  let user = new User({ name, emailLower, organisationID, active: true });
 
   await hashPassword(password)
     .then(async hashedPass => {
@@ -49,12 +51,14 @@ userSchema.statics.updateUser = async data => {
     passResult = await hashPassword(data.password);
     data = {
       ...data,
+      email: data.email.toLowerCase(),
       password: passResult
     };
   }
 
+
   return await UserModel.findOneAndUpdate(
-    data.id,
+    {_id : data.id},
     data,
     { upsert: false, new: true },
     async (err, User) => {

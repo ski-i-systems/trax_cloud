@@ -37,7 +37,7 @@ input LoginUserInput {
 }
 
 input UpdateUserInput {
-  _id:ID!
+  id:ID!
   name: String
   email: String
   password: String
