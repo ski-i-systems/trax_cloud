@@ -1,5 +1,6 @@
 extend type Query {
-  Files: [File]!
+  FilesOld: [File]!
+  Files(organisationID: String!): [File]!
 }
 
 
@@ -15,7 +16,7 @@ extend type Mutation {
 type File {
   id: ID
   creator: String!
-  organisation: String!
+  organisationID: ID!
   documentType: String
   fields: [FieldTag]
   notes: [Note]
@@ -36,11 +37,10 @@ type FieldTag {
   value: String
 }
 
-
 input CreateFileInput {
-  organisation: String!
   documentType: String
 }
+
 input CreateFileTags {
   key: String
   value: String

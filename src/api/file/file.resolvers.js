@@ -2,18 +2,19 @@ const { getUserId } = require("../../utils/getUserId");
 
 module.exports = {
   Query: {
-    Files: (parent, args, ctx, info) => ctx.models.file.find({})
+    FilesOld: (parent, args, ctx, info) => ctx.models.file.find({}),
+    Files: (parent, args, ctx, info) => ctx.models.file.find({organisationID: args.organisationID})
   },
   Mutation: {
     createFile: async (parent, args, { req, models }, info) => {
       const userId = getUserId(req);
       const user = await models.user.findOne({ _id: userId });
-      const { organisation, documentType } = args.data;
+      const { documentType } = args.data;
 
       if (user) {
         const file = await models.file.create({
           creator: userId,
-          organisation,
+          organisationID : user.organisationID,
           documentType,
           fields: args.fields
         });
