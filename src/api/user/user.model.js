@@ -24,7 +24,7 @@ userSchema.statics.createNewUser = async function(userDetails) {
   //Not there at the moment so hardcoding here for the moment
 
   let emailLower = email.toLowerCase();
-  
+
   let user = new User({ name, emailLower, organisationID, active: true });
 
   await hashPassword(password)
@@ -51,14 +51,19 @@ userSchema.statics.updateUser = async data => {
     passResult = await hashPassword(data.password);
     data = {
       ...data,
-      email: data.email.toLowerCase(),
       password: passResult
     };
   }
 
-
+  if (data.email) {
+    data = {
+      ...data,
+      email: data.email.toLowerCase()
+    };
+  }
+  console.log("here is finshed data", data);
   return await UserModel.findOneAndUpdate(
-    {_id : data.id},
+    { _id: data.id },
     data,
     { upsert: false, new: true },
     async (err, User) => {
