@@ -13,6 +13,7 @@ module.exports = {
       const userId = getUserId(ctx.req);
 
       const user = await ctx.models.user.findUser(userId);
+
       if (user) {
         const newUser = {
           ...data,

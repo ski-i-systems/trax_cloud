@@ -9,7 +9,7 @@ const userSchema = new Schema(
     name: { type: String, required: true },
     email: { type: String, required: true, unique: true },
     password: { type: String, required: true },
-    active: Boolean
+    active: {type: Boolean, default: true}
   },
   { timestamps: true }
 );
@@ -22,17 +22,15 @@ userSchema.statics.createNewUser = async function(userDetails) {
 
   //organisationId can be garnered from the logged in user when we are passing it in the request object.
   //Not there at the moment so hardcoding here for the moment
-
   let emailLower = email.toLowerCase();
 
-  let user = new User({ name, emailLower, organisationID, active: true });
+  let user = new User({ name, email:emailLower, password, organisationID, active: true });
 
-  await hashPassword(password)
-    .then(async hashedPass => {
-      user.password = hashedPass;
-      await user.save().then(usr => {
-        user = usr;
-      });
+  //await hashPassword(password)
+    //.then(async hashedPass => {
+      //user.password = hashedPass;
+    await user.save().then(usr => {
+      user = usr;
     })
     .catch(err => {
       throw new Error(err);
@@ -47,28 +45,32 @@ userSchema.statics.findUser = async (userId, callback) => {
 userSchema.statics.updateUser = async data => {
   let UserModel = mongoose.model("User", userSchema);
 
-  if (data.password) {
-    passResult = await hashPassword(data.password);
-    data = {
-      ...data,
-      password: passResult
-    };
-  }
+  console.log('data is', data);
 
-  if (data.email) {
-    data = {
-      ...data,
-      email: data.email.toLowerCase()
-    };
-  }
-  console.log("here is finshed data", data);
+  // if (data.password) {
+  //   passResult = await hashPassword(data.password);
+  //   data = {
+  //     ...data,
+  //     password: passResult
+  //   };
+  // }
+
+  // if (data.email) {
+  //   data = {
+  //     ...data,
+  //     email: data.email.toLowerCase()
+  //   };
+  // }
+
+  data = {...data};
   return await UserModel.findOneAndUpdate(
     { _id: data.id },
     data,
     { upsert: false, new: true },
     async (err, User) => {
       if (err) return err;
-      console.log("user is " + User);
+      if(User)
+        User.save();
     }
   );
 
@@ -85,10 +87,34 @@ userSchema.statics.deleteUser = async userId => {
     await UserModel.findByIdAndRemove(userId, function(err, doc) {
       if (err) return err;
 
-      console.log("doc is : " + doc);
+      console.log("doc is : ", doc);
     });
   }
   return deletedUser;
 };
+
+userSchema.pre('save', async function(next) {
+  console.log('In pre save function of user, applying tolowercase to email field and hashing password if needed');
+
+  if(this.email){
+    this.email = this.email.toLowerCase();
+  }
+
+  if(this.password)
+  {
+    if(this.password.length < 25){
+      try {
+        await hashPassword(this.password).then(res => {
+          this.password = res;
+        })
+      }
+      catch(err){
+        throw err;
+      }
+    }
+  }
+  return next();
+});
+
 
 module.exports = mongoose.model("users", userSchema);
