@@ -1,7 +1,7 @@
 const mongoose = require("mongoose");
 const Schema = mongoose.Schema;
 
-const { hashPassword } = require("../../utils/hashPassword");
+//const { hashPassword } = require("../../utils/hashPassword");
 const organisationSchema = new Schema(
   {
     name: { type: String, required: true, unique: true },
@@ -58,13 +58,14 @@ organisationSchema.methods.createAdministrator = async function createAdministra
   let { adminName, adminEmail, adminPassword } = data.userData;
   let newAdminUser;
 
+
   //Attempt to hash the password first, if successful, create the user and assign him an organisation id using "this._id"
-  await hashPassword(adminPassword).then(async (hashedPassword) => {
-    console.log('about to create user');
+  //await hashPassword(adminPassword).then(async (hashedPassword) => {
       await userSchema.create({
         name: adminName,
-        password: hashedPassword,
-        email: adminEmail.toLower(),
+        password: adminPassword,
+        email: adminEmail,
+
         //Set this organisations id to this user....
         organisationID: this._id
         })
@@ -74,8 +75,9 @@ organisationSchema.methods.createAdministrator = async function createAdministra
           //but for now it gets the code up and running.
           newAdminUser = newUser
         })
-    }).catch(err => {
-      console.log('Overall error is: '+ err);
+    //})
+    .catch(err => {
+      console.log('Overall error is: ', err);
       throw err;
     });
   //And return here.
