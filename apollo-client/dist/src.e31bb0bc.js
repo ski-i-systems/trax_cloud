@@ -12896,6 +12896,16 @@ function _getRequireWildcardCache() { if (typeof WeakMap !== "function") return 
 
 function _interopRequireWildcard(obj) { if (obj && obj.__esModule) { return obj; } if (obj === null || typeof obj !== "object" && typeof obj !== "function") { return { default: obj }; } var cache = _getRequireWildcardCache(); if (cache && cache.has(obj)) { return cache.get(obj); } var newObj = {}; var hasPropertyDescriptor = Object.defineProperty && Object.getOwnPropertyDescriptor; for (var key in obj) { if (Object.prototype.hasOwnProperty.call(obj, key)) { var desc = hasPropertyDescriptor ? Object.getOwnPropertyDescriptor(obj, key) : null; if (desc && (desc.get || desc.set)) { Object.defineProperty(newObj, key, desc); } else { newObj[key] = obj[key]; } } } newObj.default = obj; if (cache) { cache.set(obj, newObj); } return newObj; }
 
+function _templateObject2() {
+  var data = _taggedTemplateLiteral(["\n  query {\n    Organisations {\n      name \n    }\n  }\n"]);
+
+  _templateObject2 = function _templateObject2() {
+    return data;
+  };
+
+  return data;
+}
+
 function _templateObject() {
   var data = _taggedTemplateLiteral(["\n  query {\n    Users {\n      name\n      email\n    }\n  }\n"]);
 
@@ -12912,6 +12922,7 @@ var client = new _apolloBoost.default({
   uri: "http://localhost:7777"
 });
 var getUsers = (0, _apolloBoost.gql)(_templateObject());
+var getOrgs = (0, _apolloBoost.gql)(_templateObject2());
 client.query({
   query: getUsers
 }).then(function (response) {
@@ -12920,6 +12931,15 @@ client.query({
     html += "\n        <div><h3>".concat(user.name, "</h3></div>\n        ");
   });
   document.getElementById("users").innerHTML = html;
+});
+client.query({
+  query: getOrgs
+}).then(function (response) {
+  var html = "";
+  response.data.Organisations.forEach(function (org) {
+    html += "\n        <div>\n            <h3>".concat(org.name, "</h3>\n            </div>\n        ");
+  });
+  document.getElementById("orgs").innerHTML = html;
 });
 },{"apollo-boost":"../node_modules/apollo-boost/lib/bundle.esm.js"}],"../node_modules/parcel-bundler/src/builtins/hmr-runtime.js":[function(require,module,exports) {
 var global = arguments[3];

@@ -6,6 +6,10 @@
   "scripts": {
     "test": "jest --watch"
   },
+  "jest": {
+    "globalSetup": "./tests/jest/globalSetup.js",
+    "globalTeardown": "./tests/jest/globalTeardown.js"
+  },
   "author": "",
   "license": "ISC",
   "dependencies": {

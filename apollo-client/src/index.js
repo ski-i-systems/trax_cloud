@@ -12,6 +12,13 @@ const getUsers = gql`
     }
   }
 `;
+const getOrgs = gql`
+  query {
+    Organisations {
+      name 
+    }
+  }
+`;
 
 client
   .query({
@@ -25,4 +32,20 @@ client
         `;
     });
     document.getElementById("users").innerHTML = html;
+  });
+
+client
+  .query({
+    query: getOrgs
+  })
+  .then(response => {
+    let html = "";
+    response.data.Organisations.forEach(org => {
+      html += `
+        <div>
+            <h3>${org.name}</h3>
+            </div>
+        `;
+    });
+    document.getElementById("orgs").innerHTML = html;
   });
