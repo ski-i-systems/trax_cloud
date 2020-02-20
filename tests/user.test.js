@@ -1,6 +1,7 @@
 require("cross-fetch/polyfill");
 const ApolloBoost = require("apollo-boost").default;
-const gql = require("graphql-tag").default
+const {gql} = require("apollo-boost")
+
 
 
 const client = new ApolloBoost({
