@@ -2,34 +2,29 @@ require("cross-fetch/polyfill");
 const ApolloBoost = require("apollo-boost").default;
 const { gql } = require("apollo-boost");
 const mongoose = require("mongoose");
+const { hashPassword } = require("../src/utils/hashPassword");
+const organisationModel = require("../src/api/organisation/organisation.model");
+const userModel = require("../src/api/user/user.model");
 
 const client = new ApolloBoost({
   uri: "http://localhost:7777"
 });
 
-beforeEach(async function(done) {
-  /*
-      Define clearDB function that will loop through all 
-      the collections in our mongoose connection and drop them.
-    */
-
-  async function clearDB() {
-    const collections = await mongoose.connection.db.collections();
-
-    for (var i in collections) {
-      await collections[i].deleteMany({});
-    }
-    // for (var i in mongoose.connection.collections) {
-    //   mongoose.connection.collections[i].remove(function() {});
-    // }
-    return done();
+async function clearDB() {
+  const collections = await mongoose.connection.db.collections();
+  console.log(collections);
+  for (var i in collections) {
+      console.log('collections', collections[i]);
+      
+    collections[i].deleteMany({});
   }
+  // for (var i in mongoose.connection.collections) {
+  //   mongoose.connection.collections[i].remove(function() {});
+  // }
+  // return done();
+}
 
-  /*
-      If the mongoose connection is closed, 
-      start it up using the test url and database name
-      provided by the node runtime ENV
-    */
+beforeEach(async function(done) {
   if (mongoose.connection.readyState === 0) {
     mongoose.connect(
       "mongodb://127.0.0.1:27017/trax_cloud",
@@ -43,10 +38,12 @@ beforeEach(async function(done) {
         if (err) {
           throw err;
         }
+        console.log("got here");
         return clearDB();
       }
     );
   } else {
+    console.log("got here else");
     return clearDB();
   }
 });
@@ -57,6 +54,7 @@ afterEach(function(done) {
 });
 
 afterAll(done => {
+  clearDB();
   return done();
 });
 
@@ -85,12 +83,27 @@ test("should create organisation with user", async () => {
   const response = await client.mutate({
     mutation: createOrg
   });
- 
-  expect(response.data.createOrganisation.organisation.name).toBe("Paul Ltd");
-  expect(response.data.createOrganisation.adminUser.email).toBe("paulmc@paulltd.ie")
-})
 
-;
+  expect(response.data.createOrganisation.organisation.name).toBe("Paul Ltd");
+  expect(response.data.createOrganisation.adminUser.email).toBe(
+    "paulmc@paulltd.ie"
+  );
+});
+
+// test("should login with Admin User Created", async () => {
+//   const loginUser = gql`
+//     loginUser(data:{email:"paulmc@paulltd.ie",password:"12345678"}){
+//     user{
+//       name
+//     }
+//     token
+//   }
+//     `;
+//   const response = await client.mutate({
+//     mutation: loginUser
+//   });
+//   expect(response.data.loginUser.user.name).toBe("PaulMc");
+// });
 
 // test("should create new user", async () => {
 //   const getUsers = gql`
