@@ -69,8 +69,8 @@ userSchema.statics.updateUser = async data => {
     { upsert: false, new: true },
     async (err, User) => {
       if (err) return err;
-      if(User)
-        User.save();
+      //User.save must be called here, as the pre save hook does not fire for findOneAndUpdate.
+      User.save();
     }
   );
 
