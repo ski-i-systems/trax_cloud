@@ -46,11 +46,6 @@ organisationSchema.statics.createNewOrganisation = async function(details) {
   return { organisation, adminUser };
 };
 
-
-
-
-
-
 //#endregion
 
 //#region Instance Methods

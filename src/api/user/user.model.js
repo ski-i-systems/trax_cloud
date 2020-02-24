@@ -94,7 +94,7 @@ userSchema.statics.deleteUser = async userId => {
 };
 
 userSchema.pre('save', async function(next) {
-  console.log('In pre save function of user, applying tolowercase to email field and hashing password if needed');
+  //console.log('In pre save function of user, applying tolowercase to email field and hashing password if needed');
 
   if(this.email){
     this.email = this.email.toLowerCase();

@@ -4,6 +4,31 @@ const { getUserId } = require("../../utils/getUserId");
 const bcrypt = require("bcryptjs");
 module.exports = {
   Query: {
+    //Get a single user by id, email or name
+    //If it's by name, as it's not unique, the name should be  
+    User: async (parent, args, ctx, info)  =>  { 
+      let {data} = args;
+      let {id, name, email} = data;
+      let user;
+      if(id == undefined){
+        const userId = getUserId(ctx.req);
+        user = await ctx.models.user.findUser(userId);        
+      }
+
+      let query;
+      if(id){
+        //Don't need organisation id here for the moment....
+        query = { /*organisationID: user.organisationID,*/ _id: id };
+      }
+      else if(email){
+          query = { /*organisationID: user.organisationID, */ email:email.toLowerCase() };
+      }
+      else if(name && user !== undefined){
+        query = { organisationID: user.organisationID, name: name };
+      }
+
+      return ctx.models.user.findOne(query)
+  },
     Users: (parent, args, ctx, info) => ctx.models.user.find({}),
     usersByOrg: (parent,args,ctx,info) => ctx.models.user.find({organisationID:args.id})
   },
