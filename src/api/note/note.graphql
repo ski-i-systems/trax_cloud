@@ -1,0 +1,22 @@
+extend type Query {
+  Notes: [Note!]
+}
+
+type Note {
+  id: ID
+  userId: ID!
+  organisationID: ID!
+  noteText: String!
+  fileId: ID!
+  createdAt: String
+  updatedAt: String
+}
+
+extend type Mutation {
+  createNote(data:CreateNoteInput):Note!
+}
+
+input CreateNoteInput {
+  noteText:String!
+  fileId:String!
+}
