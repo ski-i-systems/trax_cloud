@@ -2,7 +2,11 @@ const mongoose = require("mongoose");
 const Schema = mongoose.Schema;
 // const NoteSchema = require("../../models/Note");
 
-const FieldSchema = new Schema({ key: String, value: String });
+const FieldSchema = new Schema({ 
+  key: String, 
+  value: String, 
+  dataType: { type:String, default:'string', enum:['string', 'currency', 'datetime', 'integer', 'boolean']} 
+});
 
 const fileSchema = new Schema(
   {
@@ -12,8 +16,10 @@ const fileSchema = new Schema(
     documentType: { type: String },
     fields: [FieldSchema]
     // notes: [NoteSchema]
+
   },
   { timestamps: true }
 );
+
 
 module.exports = mongoose.model("files", fileSchema);

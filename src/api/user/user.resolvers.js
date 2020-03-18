@@ -5,7 +5,7 @@ const bcrypt = require("bcryptjs");
 module.exports = {
   Query: {
     //Get a single user by id, email or name
-    //If it's by name, as it's not unique, the name should be  
+    //If it's by name, as it's not unique, the name should be accompanied by the users organisationId
     User: async (parent, args, ctx, info)  =>  { 
       let {data} = args;
       let {id, name, email} = data;

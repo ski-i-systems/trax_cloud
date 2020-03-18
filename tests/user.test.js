@@ -6,14 +6,32 @@ const { hashPassword } = require("../src/utils/hashPassword");
 const organisationModel = require("../src/api/organisation/organisation.model");
 const userModel = require("../src/api/user/user.model");
 
-const Seeder = require("../src/utils/seedDatabaseWithData");
+const Seeder = require('../src/utils/seedDatabaseWithData');
 
 const client = new ApolloBoost({
   uri: "http://localhost:7777"
 });
 
+//This client will carry the authorization header and should be created when the test logging in the user is succesful.
+let authorizedClient;
+const getAuthorizedClient = (token) => {
+  return new ApolloBoost ({
+    uri: "http://localhost:7777",
+    request : (operation) => {
+      if(token){
+        operation.setContext({
+          headers: {
+            "Authorization" : `Bearer ${token}`
+          }
+        })
+      }
+    }
+  })
+};
+
 //Test Variables....
-let userToken, userOrganisationId;
+//We will use the userToken here to create the 
+//let userToken, userOrganisationId;
 
 // async function clearDB(done) {
 //   // const collections = await mongoose.connection.db.collections();
@@ -28,7 +46,6 @@ let userToken, userOrganisationId;
 //   return done();
 // }
 
-<<<<<<< HEAD
 beforeAll(() => {
 
    return Seeder.clearDatabase().then((clearDBResult) => {
@@ -61,122 +78,38 @@ afterEach(function(done) {
 
 
 test("should log the user Paulmc in", async (done) => {
-=======
-// beforeAll(async (done) => {
-//   await Seeder.seedDatabaseWithTestData().then(() => {
-//     done();
-//   });
-// });
-
-beforeEach(async function(done) {
-  if (mongoose.connection.readyState === 0) {
-    mongoose.connect(
-      "mongodb://127.0.0.1:27017/trax_cloud",
-      {
-        useNewUrlParser: true,
-        useUnifiedTopology: true,
-        useFindAndModify: false,
-        useCreateIndex: true
-      },
-      function(err) {
-        if (err) {
-          throw err;
-        }
-        console.log("in here");
-        //return 
-        done();
-        //return clearDB(done);
-      }
-    );
-  } else {
-    console.log("or here");
-     done();
-    //return clearDB(done);
-  }
-});
-
-// afterEach(function(done) {
-//   mongoose.disconnect();
-//   return done();
-// });
-
-test("should create organisation with user", async done => {
-  const createOrg = gql`
-    mutation {
-      createOrganisation(
-        data: {
-          name: "Paul Ltd"
-          adminName: "PaulMc"
-          adminEmail: "Paulmc@paulltd.ie"
-          adminPassword: "12345678"
-        }
-      ) {
-        organisation {
-          name
-          createdAt
-        }
-        adminUser {
-          name
-          email
-        }
-      }
-    }
-  `;
-
-  const response = await client
-    .mutate({
-      mutation: createOrg
-    })
-    .then();
-
-  console.log("data is ", response.data);
-
-  expect(response.data.createOrganisation.organisation.name).toBe("Paul Ltd");
-  expect(response.data.createOrganisation.adminUser.email).toBe(
-    "paulmc@paulltd.ie"
-  );
- done();
-});
-
-
-
-
-test("should log the user Paulmc in", async done => {
->>>>>>> 8f74919a6c540fb2cb51007cc6ed407f165329b4
   const logPaulIn = gql`
-    mutation {
-      loginUser(data: { email: "paulmc@paulltd.ie", password: "12345678" }) {
+    mutation{
+      loginUser(data:{
+        email:"paulmc@paulltd.ie"
+        password:"12345678"
+      }){
         token
-        user {
+        user{
           name
           email
           organisationID
         }
       }
     }
-  `;
+  `
   const response = await client.mutate({
     mutation: logPaulIn
   });
 
-<<<<<<< HEAD
   userOrganisationId = response.data.loginUser.user.organisationID;
-  userToken = response.data.loginUser.token;
+  let userToken = response.data.loginUser.token;
+
+  authorizedClient = getAuthorizedClient(userToken);
 
   expect(response.data.loginUser.user.email).toBe(
     "paulmc@paulltd.ie"
   );
-=======
-  console.log(response.data);
 
-  //expect(response.data.loginUser.token).toBe("Paul Ltd");
-  expect(response.data.loginUser.user.email).toBe("paulmc@paulltd.ie");
->>>>>>> 8f74919a6c540fb2cb51007cc6ed407f165329b4
-
-   done();
+  return done();
 });
 
-<<<<<<< HEAD
+//This test is kind of unnecessary, as it's only testing our seed method to fill the dataase,
 test("should get total user count, expecting 26", async () => {
   const getUsers = gql`
     query {
@@ -186,6 +119,7 @@ test("should get total user count, expecting 26", async () => {
       }
     }
   `;
+
   const response = await client.query({
     query: getUsers
   });
@@ -193,12 +127,8 @@ test("should get total user count, expecting 26", async () => {
   expect(response.data.Users.length).toBe(26);
 });
 
-test("should get total users in PaulLtd, 2", async () => {
-
-  console.log('userOrganisationId =', userOrganisationId);
+test("should get total users in PaulLtd, which should be 1", async () => {
   let idVar = `id: "${userOrganisationId}"`;
-  console.log(idVar);
-
   const getUsersInPaulsOrg = gql`
     query{
       usersByOrg(${idVar}) {
@@ -210,65 +140,96 @@ test("should get total users in PaulLtd, 2", async () => {
   }
 }
   `;
-  const response = await client.query({
+  //const response = await client.query({
+  const response = await authorizedClient.query({
     query: getUsersInPaulsOrg
   });
-  console.log('users ... ', response.data.usersByOrg);
   expect(response.data.usersByOrg.length).toBe(1);
 });
 
 
-test("1 plus 2 should be 3", () => {
-// return Seeder.sum(1, 2)
-//   .then(re => {
-//   expect(re).toBe(3);    
-//  })
 
-let re = Seeder.sum(1,2);
-  expect(re).toBe(3);
+test("Should Create a file in PaulLtd", async () => {
+  let idVar = `id: "${userOrganisationId}"`;
+  const createFile = gql`
+mutation{
+  createFile(data:{
+    documentType:"Purchase Invoice"
+    organisationID:"5e56861855b6de525c2fa02d"
+  }, fields:[
+    {key:"Invoice Number", value:"12345"},
+    {key:"PO Number", value:"PO-101"}, 
+    {key:"Net Amt", value:"29.99", dataType: currency}
+  ]){
+  	file{
+      fields{
+        key
+        value
+        dataType
+      }
+    }
+  }
+}
+  `;
+//let authClient = getAuthorizedClient(userToken);
+
+const response = await authorizedClient.mutate({
+  mutation: createFile
 });
 
-test("1 plus 2 should be 3 even after async", () => {
-  return Seeder.sumAsync(1, 2)
-    .then(re => {
-    expect(re).toBe(3);    
-   })
-  
-  // let re = Seeder.sum(1,2);
-  //   expect(re).toBe(3);
-});  
+expect(response.data.createFile.file.fields[2].value).toBe("29.99");
+});
 
-test("1 plus 1 should be 2", () => {
-// return Seeder.sum(1, 1)
+//#region UnUsedTests
+
+//#region sum Tests
+// test("1 plus 2 should be 3", () => {
+// // return Seeder.sum(1, 2)
+// let re = Seeder.sum(1,2);
+//   expect(re).toBe(3);
+// });
+
+// test("1 plus 2 should be 3 even after async", () => {
+//   return Seeder.sumAsync(1, 2)
 //     .then(re => {
-//     expect(re).toBe(2);    
-//   })
-
-let re = Seeder.sum(1,1);
-  expect(re).toBe(2);
-});
-
-test("1 plus 1 should be 2 even after async", () => {
-  return Seeder.sumAsync(1, 1)
-      .then(re => {
-      expect(re).toBe(2);    
-    })
-  // let re = Seeder.sum(1,1);
-  //   expect(re).toBe(2);
-});
+//     expect(re).toBe(3);    
+//    })
   
-test("2 plus 2 should be 4", () => {
-let re = Seeder.sum(2,2);
-expect(re).toBe(4);
-});
+//   // let re = Seeder.sum(1,2);
+//   //   expect(re).toBe(3);
+// });  
 
-test("2 plus 2 should be 4 even after async", () => {
-  let resp = Seeder.sumAsync(2, 2);
-  return resp.then(re => {
-    expect(re).toBe(4);      
-  })
-});
-    
+// test("1 plus 1 should be 2", () => {
+// // return Seeder.sum(1, 1)
+// //     .then(re => {
+// //     expect(re).toBe(2);    
+// //   })
+
+// let re = Seeder.sum(1,1);
+//   expect(re).toBe(2);
+// });
+
+// test("1 plus 1 should be 2 even after async", () => {
+//   return Seeder.sumAsync(1, 1)
+//       .then(re => {
+//       expect(re).toBe(2);    
+//     })
+//   // let re = Seeder.sum(1,1);
+//   //   expect(re).toBe(2);
+// });
+  
+// test("2 plus 2 should be 4", () => {
+// let re = Seeder.sum(2,2);
+// expect(re).toBe(4);
+// });
+
+// test("2 plus 2 should be 4 even after async", () => {
+//   let resp = Seeder.sumAsync(2, 2);
+//   return resp.then(re => {
+//     expect(re).toBe(4);      
+//   })
+// });
+    //#endregion
 
 
 
@@ -339,43 +300,7 @@ test("2 plus 2 should be 4 even after async", () => {
 //   return done();
 // });
 
-afterAll(async done => {
-  //await Seeder.clearDatabase();
-//console.log('db should be cleared...');
-  // clearDB(done);
-  return done(); 
-=======
-test("should log the user virgil in", async done => {
-  const logVirgilIn = gql`
-    mutation {
-      loginUser(data: { email: "virgil@apple.ie", password: "12345678" }) {
-        token
-        user {
-          name
-          email
-        }
-      }
-    }
-  `;
-  const response = await client.mutate({
-    mutation: logVirgilIn
-  });
 
-  console.log(response.data);
-
-  //expect(response.data.loginUser.token).toBe("Paul Ltd");
-  expect(response.data.loginUser.user.email).toBe("virgil@apple.ie");
-
-   done();
->>>>>>> 8f74919a6c540fb2cb51007cc6ed407f165329b4
-});
-
-// afterAll(async done => {
-//   await Seeder.clearDatabase();
-//   console.log("db should be cleared...");
-//   // clearDB(done);
-//   return done();
-// });
 
 // test("should login with Admin User Created", async () => {
 //   const loginUser = gql`
@@ -392,4 +317,11 @@ test("should log the user virgil in", async done => {
 //   expect(response.data.loginUser.user.name).toBe("PaulMc");
 // });
 
+//#endregion
 
+afterAll(async done => {
+  //await Seeder.clearDatabase();
+//console.log('db should be cleared...');
+  // clearDB(done);
+  return done(); 
+});

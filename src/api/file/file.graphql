@@ -1,6 +1,9 @@
 extend type Query {
   FilesOld: [File]!
-  Files(organisationID: String!): [File]!
+  # Files(organisationID: String!): [File]!
+  # Files(organisationID: String!): [File]!
+  Files: [File]!
+  File(id: String!): File!
 }
 
 extend type Mutation {
@@ -10,7 +13,14 @@ extend type Mutation {
     data: CreateFileInput
     fields: [CreateFileTags]
   ): FilePayload!
+  deleteFile(id: String!) : DeleteResult!
 }
+
+type DeleteResult {
+  deleteCount: Int!
+  success: String!
+}
+
 
 type File {
   id: ID
@@ -25,16 +35,25 @@ type File {
 type FieldTag {
   key: String
   value: String
+  dataType: String
 }
 
 input CreateFileInput {
   documentType: String
-  organisationID: String!
+}
+
+enum dataTypeEnum {
+    string
+    currency
+    datetime 
+    integer 
+    boolean 
 }
 
 input CreateFileTags {
   key: String
   value: String
+  dataType: dataTypeEnum
 }
 
 type FilePayload {
