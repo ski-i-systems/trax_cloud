@@ -148,20 +148,20 @@ test("should get total users in PaulLtd, which should be 1", async () => {
 });
 
 
-
+let createdFileID;
 test("Should Create a file in PaulLtd", async () => {
-  let idVar = `id: "${userOrganisationId}"`;
   const createFile = gql`
 mutation{
   createFile(data:{
     documentType:"Purchase Invoice"
-    organisationID:"5e56861855b6de525c2fa02d"
   }, fields:[
     {key:"Invoice Number", value:"12345"},
     {key:"PO Number", value:"PO-101"}, 
     {key:"Net Amt", value:"29.99", dataType: currency}
   ]){
   	file{
+      id
+      documentType
       fields{
         key
         value
@@ -171,14 +171,88 @@ mutation{
   }
 }
   `;
-//let authClient = getAuthorizedClient(userToken);
-
 const response = await authorizedClient.mutate({
   mutation: createFile
 });
 
-expect(response.data.createFile.file.fields[2].value).toBe("29.99");
+createdFileID = response.data.createFile.file.id;
+
+expect(response.data.createFile.file.fields.length).toBe(3);
+expect(response.data.createFile.file.documentType).toBe("Purchase Invoice");
+
+let poNumberField = response.data.createFile.file.fields.find(x => x.key == "PO Number");
+let netamtField = response.data.createFile.file.fields.find(x => x.key == "Net Amt");
+let invoicenumField = response.data.createFile.file.fields.find(x => x.key == "Invoice Number");
+
+expect(poNumberField.value).toBe("PO-101");
+expect(poNumberField.dataType).toBe("string");
+expect(netamtField.value).toBe("29.99");
+expect(netamtField.dataType).toBe("currency");
+expect(invoicenumField.value).toBe("12345");
+expect(invoicenumField.dataType).toBe("string");
+
 });
+
+test("Should update the file just created by Paul, and update it to add a date field and change it's PO number", async () => {
+  let idVar = `_id: "${createdFileID}"`;
+  const updateFile = gql`
+  mutation{
+    updateFile(${idVar} , data:{
+      documentType:"Purchase Invoice"
+    }, fields:[
+      {key:"Order Date", value:"18/02/2020", dataType: datetime},
+      {key:"PO Number", value:"PO-202"}, 
+      {key:"Net Amt", value:"29.99", dataType: currency}
+    ]){
+      file{
+        id
+        documentType
+        fields{
+          key
+          value
+          dataType
+        }
+      }
+    }
+  }
+    `;
+
+  const response = await authorizedClient.mutate({
+    mutation: updateFile
+  });
+  expect(response.data.updateFile.file.fields.length).toBe(4);
+  expect(response.data.updateFile.file.documentType).toBe("Purchase Invoice");
+
+  let poNumberField = response.data.updateFile.file.fields.find(x => x.key == "PO Number");
+  let orderDateField = response.data.updateFile.file.fields.find(x => x.key == "Order Date");
+  let netamtField = response.data.updateFile.file.fields.find(x => x.key == "Net Amt");
+  let invoicenumField = response.data.updateFile.file.fields.find(x => x.key == "Invoice Number");
+  
+  expect(poNumberField.value).toBe("PO-202");
+  expect(orderDateField.value).toBe("18/02/2020");
+  expect(netamtField.value).toBe("29.99");
+  expect(invoicenumField.value).toBe("12345");
+
+})
+
+test("Should delete the file just created by Paul", async () => {
+  let idVar = `id: "${createdFileID}"`;
+  const deleteFile = gql`
+  mutation{
+    deleteFile(${idVar}){
+      deleteCount
+      success
+    }
+  }
+    `;
+  const response = await authorizedClient.mutate({
+    mutation: deleteFile
+  });
+  expect(response.data.deleteFile.deleteCount).toBe(1);
+  expect(response.data.deleteFile.success).toBe("Success");
+})
+
+
 
 //#region UnUsedTests
 
