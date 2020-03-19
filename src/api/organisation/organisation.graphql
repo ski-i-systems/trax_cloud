@@ -12,6 +12,7 @@ type Organisation {
 
 extend type Mutation {
   createOrganisation(data: CreateOrganisationInput!): OrgPayload!
+  deleteOrganisation(id:String!) : DeleteOrgPayload!
 }
 
 input CreateOrganisationInput {
@@ -24,5 +25,9 @@ input CreateOrganisationInput {
 type OrgPayload {
   organisation: Organisation!
   adminUser: User!
+}
+
+type DeleteOrgPayload{
+  deletedCount: Int!
 }
 

@@ -13,7 +13,8 @@ const client = new ApolloBoost({
 });
 
 //This client will carry the authorization header and should be created when the test logging in the user is succesful.
-let authorizedClient;
+let authorizedClient, userOrganisationId;
+
 const getAuthorizedClient = (token) => {
   return new ApolloBoost ({
     uri: "http://localhost:7777",
@@ -47,24 +48,22 @@ const getAuthorizedClient = (token) => {
 // }
 
 beforeAll(() => {
+  //  return Seeder.clearDatabase().then((clearDBResult) => {
+  //   console.log('result of clearing database is ', clearDBResult);
+  //   //console.log('So now let\'s try to seed it again with original base data.....');
+  //   Seeder.seedDatabaseWithTestData().then(seedResult => {
+  //     //console.log('seedResult is : ', seedResult);
+  //     //console.log('should have successfully seeded the database and tests can proceed.');
+  //     // return;
+  //   }).catch(err => {
+  //     //console.log('Something has gone wrong, so should we proceed with the tests?', err);
+  //     // return;
+  //   })
+  // }).catch(err => {
+  //   //console.log('heres the promise...', theResp);  
 
-   return Seeder.clearDatabase().then((clearDBResult) => {
-    //console.log('result of clearing database is ', clearDBResult);
-    //console.log('So now let\'s try to seed it again with original base data.....');
-    Seeder.seedDatabaseWithTestData().then(seedResult => {
-      //console.log('seedResult is : ', seedResult);
-      //console.log('should have successfully seeded the database and tests can proceed.');
-      // return;
-    }).catch(err => {
-      //console.log('Something has gone wrong, so should we proceed with the tests?', err);
-      // return;
-    })
-  }).catch(err => {
-    //console.log('heres the promise...', theResp);  
-
-    // return;
-  });
-  
+  //   // return;
+  // });
 })
 
 beforeEach(async function(done) {
@@ -77,11 +76,11 @@ afterEach(function(done) {
 });
 
 
-test("should log the user Paulmc in", async (done) => {
+test("should log the admin user Paulmc in", async (done) => {
   const logPaulIn = gql`
     mutation{
       loginUser(data:{
-        email:"paulmc@paulltd.ie"
+        email:"paulmc@Eisystems.ie"
         password:"12345678"
       }){
         token
@@ -103,31 +102,13 @@ test("should log the user Paulmc in", async (done) => {
   authorizedClient = getAuthorizedClient(userToken);
 
   expect(response.data.loginUser.user.email).toBe(
-    "paulmc@paulltd.ie"
+    "paulmc@eisystems.ie"
   );
 
   return done();
 });
 
-//This test is kind of unnecessary, as it's only testing our seed method to fill the dataase,
-test("should get total user count, expecting 26", async () => {
-  const getUsers = gql`
-    query {
-      Users {
-        name
-        id
-      }
-    }
-  `;
-
-  const response = await client.query({
-    query: getUsers
-  });
-  console.log('users length ', response.data.Users.length);
-  expect(response.data.Users.length).toBe(26);
-});
-
-test("should get total users in PaulLtd, which should be 1", async () => {
+test("should get total users in EiSystems, which should be 6", async () => {
   let idVar = `id: "${userOrganisationId}"`;
   const getUsersInPaulsOrg = gql`
     query{
@@ -144,12 +125,12 @@ test("should get total users in PaulLtd, which should be 1", async () => {
   const response = await authorizedClient.query({
     query: getUsersInPaulsOrg
   });
-  expect(response.data.usersByOrg.length).toBe(1);
+  expect(response.data.usersByOrg.length).toBe(6);
 });
 
 
 let createdFileID;
-test("Should Create a file in PaulLtd", async () => {
+test("Should Create a Purchase Invoice file in EISystems", async () => {
   const createFile = gql`
 mutation{
   createFile(data:{
@@ -255,6 +236,23 @@ test("Should delete the file just created by Paul", async () => {
 
 
 //#region UnUsedTests
+//This test is kind of unnecessary, as it's only testing our seed method to fill the dataase,
+// test("should get total user count, expecting 26", async () => {
+//   const getUsers = gql`
+//     query {
+//       Users {
+//         name
+//         id
+//       }
+//     }
+//   `;
+
+//   const response = await client.query({
+//     query: getUsers
+//   });
+//   console.log('users length ', response.data.Users.length);
+//   expect(response.data.Users.length).toBe(26);
+// });
 
 //#region sum Tests
 // test("1 plus 2 should be 3", () => {

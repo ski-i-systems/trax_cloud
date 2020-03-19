@@ -25,6 +25,20 @@ module.exports = {
      // console.log('result is: ',  result);
 
       return result;
+    },
+
+    deleteOrganisation: async (parent, args, ctx, info) => {
+      const { id } = args;    
+      let result = await ctx.models.organisation.deleteOne({_id : id});
+      console.log(result);
+      if(result.deletedCount > 0){
+        ctx.models.user.deleteMany({organisationID : id}).then( res => {
+       });
+       
+      }
+      
+     return { deletedCount : result.deletedCount};
+      
     }
   }
 };

@@ -2,77 +2,89 @@ const mongoose = require("mongoose");
 const Organisation = require("../api/organisation/organisation.model");
 //let Organisation = mongoose.model("Organisation", organisationSchema);
 const User = require("../api/user/user.model");
+const File = require("../api/file/file.model");
 //let User = mongoose.model("User", userSchema);
 
-const seedDatabaseWithTestData = () => {
+const seedDatabaseWithTestData = async () => {
   //Declare a model of organisation.
-    let orgNames = ["Apple","BMW","Chevrolet","Dell","EISystems",/*"Facebook","Google","Honda","Intel","Java","Kellogs","LandRover","Mitsubishi","Nissan","Opel","Peugeot","QualityTractorParts",
-"Renault","Skoda","Toyota","Universal","Volkswagen","Wilson","Yahoo","Xerox"*/];
+    let orgName = "EISystems";
 
   let firstNames = [
-    "Allison",
-    "Virgil",
-    "Joe",
-    "Andy",
-    "Trent" /*,"Fabinho","Jordan","James","Georginio","Roberto","Sadio","Mohamed"*/
+    "Eoin",
+    "Tom",
+    "Dariusz",
+    "Rory",
+    "Fergal"
   ];
 
-    return new Promise( function(resolve, reject) {
-      try{
-      orgNames.forEach(async element =>  {
-        let newOrganisation = new Organisation({
-          name: element,
-          active: true
-          });
+  return createOrganisation(orgName, firstNames);
+};
 
-          let newOrg = await newOrganisation.save(); 
-          let user = new User({
-            organisationID: newOrg._id,
-            name: "Jurgen",
-            email: "Jurgen_admin@" + newOrg.name + ".ie",
-            password: "12345678"
-          });
+  const createOrganisation = (orgName, people ) => {
+    return new Promise( function (resolve, reject) {
+    try {
+      let newOrganisation = new Organisation({
+      name: orgName,
+      active: true
+    });
 
-          let usr = await user.save();
-          console.log('adminUsr :', usr);
-
-          firstNames.forEach(async name => {
-          let orguser = new User({
-              organisationID: newOrg._id,
-              name: name,
-              email: name + "@" + newOrg.name + ".ie",
-              password: "12345678"
-            });
-
-            let u = await orguser.save();
-            console.log(`username: ${u.name} added for org: ${newOrg.name}.`)
+      newOrganisation.save().then(newOrg => {
+        let user = new User({
+          organisationID: newOrg._id,
+          name: "Paul McInerney",
+          email: "paulmc@" + newOrg.name + ".ie",
+          password: "12345678"
+        });
+  
+        user.save().then(async usr => {
+          addPeopleToOrganisation(newOrg, people).then(res => {
+            resolve(`Successfully added the Organisation ${orgName}`);
           })
-        })
+        });
+      })
+    }
+    catch(err) {
+      reject(`Some thing went wrong while creating organisation, ${err}`)
+    }
+  }
+)};
 
-        resolve("Successfully Seeded Database");
-      } catch (ex) {
-        reject(ex);
+const addPeopleToOrganisation = async (organisation, people) => {
+  return new Promise(function(resolve, reject){
+    people.forEach(async (name, index, array) => {
+    let orguser = new User({
+        organisationID: organisation._id,
+        name: name,
+        email: name + "@" + organisation.name + ".ie",
+        password: "12345678"
+      });
+
+      let u = await orguser.save();
+      console.log(`username: ${u.name} added for org: ${organisation.name}.`)
+
+      if(index === array.length -1){
+        resolve(`SUCCESS - All users added to ${organisation.name}`);
       }
     })
-  };
+   })
+
+}
 
 const clearDatabase = () => {
-  console.log('I promise to clear database')
   return new Promise((resolve, reject) => {
     try{
-      console.log('I promise to clear the users!')
-      Organisation.deleteMany({});
-    
-      console.log('I promise to clear the users!')
-      User.deleteMany({});
-    
-      console.log('I should have done my job by now.');
-      resolve('all Deleted');
-  } catch(err){
-    console.log('the catcher caught it');
-    reject(err);
-  }
-});
+      Organisation.deleteMany({}).then(() => {
+        User.deleteMany({}).then(() => {
+          File.deleteMany({}).then(() => {
+            resolve('All deleted!');
+          });
+        });
+      });
+    } catch(err){
+      console.log('the cleardatabase catcher caught it', err);
+      reject(err);
+    }
+  });
 }
 
 function sum(a, b) {
