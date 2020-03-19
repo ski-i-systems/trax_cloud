@@ -1,8 +1,8 @@
 extend type Query {
   FilesOld: [File]!
   # Files(organisationID: String!): [File]!
-  # Files(organisationID: String!): [File]!
-  Files: [File]!
+  # Files: [File]!
+  Files(data:QueryFileInput!): [File]!
   File(id: String!): File!
 }
 
@@ -40,6 +40,14 @@ type FieldTag {
 
 input CreateFileInput {
   documentType: String
+}
+
+input QueryFileInput{
+  id:String
+  documentType: String
+  creatorId: String
+  fields:String
+  
 }
 
 enum dataTypeEnum {

@@ -7,14 +7,38 @@ module.exports = {
     //Files should not expect organisation id to be passed into it, 
     //it should get it from the user who should be logged in at this point.
 
-    Files: async (parent, args, {req, models}, info) => {
+    Files: async (parent, {data}, {req, models}, info) => {
       const userId = getUserId(req);
       const user = await models.user.findOne({ _id: userId });
-      if(user)
-        return models.file.find({organisationID: user.organisationID});
+
+      let {documentType, id, creatorId, fields} = data;
+
+      if(user){
+        
+        if(documentType){
+          console.log('documentType', documentType  );
+          let mongooseFilter = { organisationID: `${user.organisationID}`, documentType: `${documentType}` };
+          return models.file.find(mongooseFilter);
+        } else if(fields){
+          console.log('fields', fields  );
+          //let mongooseFilter = { $and: [{'fields.key' : "Invoice Number"},{'fields.value' : "12347"} ]} ;
+          let mongooseFilter = { fields: { $all: [
+            //{ "$elemMatch" : { key: "Invoice Number", value: "12347" } },
+            { "$elemMatch" : { key: "PO Number", value: "PO-9999" } }
+           ]} };
+
+
+
+          return models.file.find(mongooseFilter);
+
+        } else {
+          return models.file.find({organisationID: user.organisationID});
+        }
+      }
       else
         throw new Error("Authentication Required");
     },
+
     File: async (parent, args, {req, models}, info) => { 
       const userId = getUserId(req);
       const user = await models.user.findOne({ _id: userId });

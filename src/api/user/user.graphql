@@ -1,7 +1,7 @@
 type Query {
   User(data:GetUserInput): User!
   Users: [User]!
-  usersByOrg(id: String!): [User]!
+  #usersByOrg(id: String!): [User]!
 }
 
 type User {

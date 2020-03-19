@@ -29,8 +29,14 @@ module.exports = {
 
       return ctx.models.user.findOne(query)
   },
-    Users: (parent, args, ctx, info) => ctx.models.user.find({}),
-    usersByOrg: (parent,args,ctx,info) => ctx.models.user.find({organisationID:args.id})
+    Users: async (parent, args, ctx, info) => {
+      const userId = getUserId(ctx.req);
+      const user = await ctx.models.user.findUser(userId);
+
+      if(user)
+        return ctx.models.user.find({organisationID : user.organisationID});
+    }
+    //usersByOrg: (parent,args,ctx,info) => ctx.models.user.find({organisationID:args.id})
   },
   Mutation: {
     createUser: async (parent, args, ctx, info) => {
