@@ -38,6 +38,11 @@ type FieldTag {
   dataType: String
 }
 
+input FieldTagSearch{
+  key:String!
+  value:String!
+}
+
 input CreateFileInput {
   documentType: String
 }
@@ -46,7 +51,7 @@ input QueryFileInput{
   id:String
   documentType: String
   creatorId: String
-  fields:String
+  fields:[FieldTagSearch]
   
 }
 

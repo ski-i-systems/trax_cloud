@@ -14,26 +14,33 @@ module.exports = {
       let {documentType, id, creatorId, fields} = data;
 
       if(user){
-        
+        let mongooseFilter = {};
+        mongooseFilter.organisationID = user.organisationID;
+
         if(documentType){
-          console.log('documentType', documentType  );
-          let mongooseFilter = { organisationID: `${user.organisationID}`, documentType: `${documentType}` };
-          return models.file.find(mongooseFilter);
-        } else if(fields){
-          console.log('fields', fields  );
-          //let mongooseFilter = { $and: [{'fields.key' : "Invoice Number"},{'fields.value' : "12347"} ]} ;
-          let mongooseFilter = { fields: { $all: [
-            //{ "$elemMatch" : { key: "Invoice Number", value: "12347" } },
-            { "$elemMatch" : { key: "PO Number", value: "PO-9999" } }
-           ]} };
-
-
-
-          return models.file.find(mongooseFilter);
-
-        } else {
-          return models.file.find({organisationID: user.organisationID});
+          mongooseFilter.documentType = documentType;
         }
+        if(id){
+          mongooseFilter._id = id;
+        }
+        if(fields){
+          mongooseFilter.fields =  { $all: []}
+
+          for (let index = 0; index < fields.length; index++) {
+            const element = fields[index];
+
+            mongooseFilter.fields.$all.push( 
+              { "$elemMatch" : { key: element.key, value: element.value } }
+            )
+          }
+        }
+        if(creatorId){
+          mongooseFilter.creator = creatorId;
+        }
+
+        console.log('mongoosefilter: ', mongooseFilter);
+
+        return models.file.find(mongooseFilter);
       }
       else
         throw new Error("Authentication Required");
