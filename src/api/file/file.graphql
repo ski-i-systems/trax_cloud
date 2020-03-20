@@ -1,7 +1,5 @@
 extend type Query {
   FilesOld: [File]!
-  # Files(organisationID: String!): [File]!
-  # Files: [File]!
   Files(data:QueryFileInput!): [File]!
   File(id: String!): File!
 }
@@ -38,9 +36,12 @@ type FieldTag {
   dataType: String
 }
 
+
+"""****NB searchType: in or notIn, VALUE MUST BE PIPE SEPARATED STRING****"""
 input FieldTagSearch{
   key:String!
   value:String!
+  searchType: searchTypeEnum = equals
 }
 
 input CreateFileInput {
@@ -53,6 +54,18 @@ input QueryFileInput{
   creatorId: String
   fields:[FieldTagSearch]
   
+}
+
+"""FOR VALUES in AND notIn FieldTagSearch.value MUST BE PIPE SEPARATED"""
+enum searchTypeEnum {
+    equals
+    notEquals
+    lessThan
+    greaterThan
+    lessThanOrEqual
+    greaterThanOrEqual 
+    in
+    notIn
 }
 
 enum dataTypeEnum {

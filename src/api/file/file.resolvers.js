@@ -24,13 +24,59 @@ module.exports = {
           mongooseFilter._id = id;
         }
         if(fields){
+          console.log('fields is:', fields);
+
           mongooseFilter.fields =  { $all: []}
 
+          
+          let $eq,$lt,$gt,$lte,$gte;
           for (let index = 0; index < fields.length; index++) {
+            
             const element = fields[index];
+            console.log('st is:', element.searchType);
+            let searchOperator = {};
+            let arrayVals = element.value.split('|');
+            switch (element.searchType) {
+              
+              case "equals":
+                searchOperator = { "$elemMatch" : { key: element.key, value: { $eq : element.value } } }
+                break;
+
+              case "notEquals":
+                searchOperator = { "$elemMatch" : { key: element.key, value: { $neq : element.value } } }
+                break;
+              
+              case "lessThan":
+                searchOperator = { "$elemMatch" : { key: element.key, value: { $lt : element.value } } }
+                break;
+              
+              case "greaterThan":
+                searchOperator = { "$elemMatch" : { key: element.key, value: { $gt : element.value } } }
+                break;
+              
+              case "lessThanOrEqual":
+                  searchOperator = { "$elemMatch" : { key: element.key, value: { $lte : element.value } } }
+                break;
+
+              case "greaterThanOrEqual":
+                searchOperator = { "$elemMatch" : { key: element.key, value: { $gte : element.value } } }
+                break;
+
+              case "in":
+                searchOperator = { "$elemMatch" : { key: element.key, value: { $in : arrayVals } } }
+                break;
+
+              case "notIn":
+                searchOperator = { "$elemMatch" : { key: element.key, value: { $nin : arrayVals } } }
+                break;
+                                
+              default:
+                searchOperator = { "$elemMatch" : { key: element.key, value: { $eq : element.value } } }
+                break;
+            }
 
             mongooseFilter.fields.$all.push( 
-              { "$elemMatch" : { key: element.key, value: element.value } }
+              searchOperator
             )
           }
         }
