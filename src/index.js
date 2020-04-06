@@ -5,10 +5,14 @@ const {server} = require("./server");
 // const lodash = require("lodash");
 // const user = require("./api/user");
 
-require('dotenv').config({ path: "./config/dev.env" });
+let devVars = { };
+
+devVars.path = __dirname + '\\config\\dev.env.js';
+
+require('dotenv').config(devVars);
+
 
 server.start({ port: 7777 }, () => {
   console.log(`The server is running on port 7777`);
-
-}
+  }
 );

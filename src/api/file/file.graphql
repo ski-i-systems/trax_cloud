@@ -26,6 +26,7 @@ type File {
   organisationID: ID!
   documentType: String
   fields: [FieldTag]
+  filePath: String
   createdAt: String
   updatedAt: String
 }
@@ -46,6 +47,7 @@ input FieldTagSearch{
 
 input CreateFileInput {
   documentType: String
+  filePath: String
 }
 
 input QueryFileInput{

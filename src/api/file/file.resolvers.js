@@ -102,11 +102,12 @@ module.exports = {
     }
   },
   Mutation: {
-    createFile: async (parent, args, { req, models }, info) => {
+    createFile: async (parent, args, { req, res, models }, info) => {
       const userId = getUserId(req);
       const user = await models.user.findOne({ _id: userId });
-      const { documentType } = args.data;
+      const { documentType, filePath } = args.data;
 
+    
       if (user) {
         const file = await models.file.create({
           creator: userId,
@@ -115,6 +116,8 @@ module.exports = {
           fields: args.fields
         });
 
+        await file.uploadFileToAzure({'imgPath': filePath, 'orgId': user.organisationID, 'docType':documentType});
+        
         return { file };
       } else if (!user) {
         throw new Error("Authentication Required");
