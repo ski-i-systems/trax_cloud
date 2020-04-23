@@ -2,9 +2,11 @@ const { getUserId } = require("../../utils/getUserId");
 
 module.exports = {
   Query: {
-    Notes: (parent, args, ctx, info) => {
-      return ctx.modules.notes.find({});
-    }
+    Notes: async (parent, args, ctx, info) => {
+      console.log('ctx', ctx);
+      console.log("gothere");
+      return await ctx.models.note.find({});
+    },
   },
   Mutation: {
     createNote: async (parent, args, ctx, info) => {

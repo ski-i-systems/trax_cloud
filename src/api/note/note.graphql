@@ -1,5 +1,5 @@
 extend type Query {
-  Notes: [Note!]
+  Notes: [Note]
 }
 
 type Note {
@@ -13,10 +13,10 @@ type Note {
 }
 
 extend type Mutation {
-  createNote(data:CreateNoteInput):Note!
+  createNote(data: CreateNoteInput): Note!
 }
 
 input CreateNoteInput {
-  noteText:String!
-  fileId:String!
+  noteText: String!
+  fileId: String!
 }

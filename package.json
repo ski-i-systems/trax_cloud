@@ -4,7 +4,8 @@
   "description": "",
   "main": "index.js",
   "scripts": {
-    "test": "jest --watch "
+    "test": "jest --watch ",
+    "start": "nodemon src/index.js"
   },
   "jest": {
     "globalSetup": "./tests/jest/globalSetup.js",
@@ -14,10 +15,13 @@
   "author": "",
   "license": "ISC",
   "dependencies": {
+    "@azure/storage-blob": "^12.1.1",
     "apollo-boost": "^0.4.7",
+    "aws-sdk": "^2.661.0",
     "bcrypt": "^3.0.7",
     "bcryptjs": "^2.4.3",
     "cross-fetch": "^3.0.4",
+    "dotenv": "^8.2.0",
     "graphql": "^14.6.0",
     "graphql-yoga": "^1.18.3",
     "jest": "^25.1.0",

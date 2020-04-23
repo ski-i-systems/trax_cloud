@@ -47,20 +47,6 @@ userSchema.statics.updateUser = async data => {
 
   console.log('data is', data);
 
-  // if (data.password) {
-  //   passResult = await hashPassword(data.password);
-  //   data = {
-  //     ...data,
-  //     password: passResult
-  //   };
-  // }
-
-  // if (data.email) {
-  //   data = {
-  //     ...data,
-  //     email: data.email.toLowerCase()
-  //   };
-  // }
 
   data = {...data};
   return await UserModel.findOneAndUpdate(
