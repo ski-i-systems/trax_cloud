@@ -1,18 +1,18 @@
-
 const AWS = require("aws-sdk");
+const awsCreds = require("./awsCreds");
 
 //Configuring AWS
 AWS.config = new AWS.Config({
-    accessKeyId: "AKIAJAAQ6NOTJF3W7S2A", // stored in the .env file
-    secretAccessKey: "thNocDCp+jmj0KVUeNwliCXzHiSryP3Ylf2FrnU5", // stored in the .env file
-    region: "eu-west-1", // This refers to your bucket configuration.
-  });
-  
-  // Creating a S3 instance
-  const s3 = new AWS.S3();
-  
-  // Retrieving the bucket name from env variable
-  const Bucket = "pauldmctestdata";
+  accessKeyId: awsCreds.creds.id, // stored in the .env file
+  secretAccessKey: awsCreds.creds.key, // stored in the .env file
+  region: awsCreds.creds.region, // This refers to your bucket configuration.
+});
+
+// Creating a S3 instance
+const s3 = new AWS.S3();
+
+// Retrieving the bucket name from env variable
+const Bucket = awsCreds.creds.bucket;
 console.log("bucket", Bucket);
 
 // In order to create pre-signed GET adn PUT URLs we use the AWS SDK s3.getSignedUrl method.

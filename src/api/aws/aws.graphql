@@ -1,0 +1,7 @@
+extend type Query {
+  URL(filename: String): s3Object!
+}
+
+type s3Object {
+  url: String
+}

@@ -19,19 +19,13 @@ type DeleteResult {
   success: String!
 }
 
-type S3Object {
-  bucket: String!
-  region: String!
-  key: String!
-}
-
 type File {
   id: ID
   creator: String!
   organisationID: ID!
   documentType: String
   fields: [FieldTag]
-  filePath: S3Object
+  filePath: String
   createdAt: String
   updatedAt: String
 }
