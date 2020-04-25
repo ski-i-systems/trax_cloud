@@ -1,0 +1,42 @@
+extend type Query {
+  FolderProperties(data: GetFolderPropertyInput): [FolderProperty]
+}
+
+type FolderProperty {
+  id: ID
+  folderID: ID!
+  name: String!
+  type: String!
+  organisationID: ID!
+  createdAt: String
+  updatedAt: String
+}
+
+extend type Mutation {
+  createFolderProperty(data: CreateFolderPropertyInput): FolderPropertyPayload!
+  deleteFolderProperty(data: DeleteFolderPropertyInput!): FolderPropertyPayload!
+  updateFolderProperty(data: UpdateFolderPropertyInput!): FolderPropertyPayload!
+}
+
+input CreateFolderPropertyInput {
+  name: String!
+  type: String!
+  folderID: ID!
+}
+
+input DeleteFolderPropertyInput {
+  id: ID!
+}
+
+input GetFolderPropertyInput {
+  folderID: ID!
+}
+
+input UpdateFolderPropertyInput {
+  id: ID!
+  name: String
+}
+
+type FolderPropertyPayload {
+  folderProperty: FolderProperty!
+}
