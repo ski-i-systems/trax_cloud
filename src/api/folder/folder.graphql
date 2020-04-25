@@ -1,0 +1,43 @@
+extend type Query {
+  Folder(data: GetFolderInput): Folder!
+  Folders: [Folder]
+  #usersByOrg(id: String!): [User]!
+}
+
+type Folder {
+  id: ID
+  name: String!
+  createdAt: String
+  updatedAt: String
+  organisationID: ID
+  active: Boolean
+}
+
+extend type Mutation {
+  createFolder(data: CreateFolderInput): FolderPayload!
+  deleteFolder(data: DeleteFolderInput!): FolderPayload!
+  updateFolder(data: UpdateFolderInput!): FolderPayload!
+}
+
+input CreateFolderInput {
+  name: String!
+}
+
+input DeleteFolderInput {
+  id: ID!
+}
+
+input GetFolderInput {
+  id: String
+  email: String
+  name: String
+}
+
+input UpdateFolderInput {
+  id: ID!
+  name: String
+}
+
+type FolderPayload {
+  folder: Folder!
+}
