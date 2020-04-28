@@ -35,8 +35,9 @@ folderSchema.statics.createNewFolder = async function(folderDetails) {
   return { folder };
 };
 folderSchema.statics.findFolder = async (folderId, callback) => {
+  console.log('folderId model', folderId);
   const folder = mongoose.model("Folder", folderSchema);
-  return folder.findOne({ _id: folderId }, callback);
+  return await folder.findOne({ _id: folderId }, callback);
 };
 folderSchema.statics.updateFolder = async (data) => {
   let FolderModel = mongoose.model("Folder", folderSchema);

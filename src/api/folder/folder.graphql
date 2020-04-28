@@ -28,9 +28,8 @@ input DeleteFolderInput {
 }
 
 input GetFolderInput {
-  id: String
-  email: String
-  name: String
+  id: ID!
+  
 }
 
 input UpdateFolderInput {

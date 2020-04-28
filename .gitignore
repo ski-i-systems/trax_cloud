@@ -1,3 +1,4 @@
 node_modules/
 apollo-client/node_modules
 src/awsCreds.js
+apollo-client/

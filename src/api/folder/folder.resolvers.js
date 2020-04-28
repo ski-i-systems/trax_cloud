@@ -37,6 +37,17 @@ module.exports = {
         return ctx.models.folder.find({});
       }
     },
+    Folder: async (parent, args, ctx, info) => {
+      const folderId = args.data;
+
+      const userId = getUserId(ctx.req);
+      const user = await ctx.models.user.findUser(userId);
+
+      if (user) {
+        const folder = await ctx.models.folder.findFolder(folderId.id);
+        return folder;
+      }
+    },
     //usersByOrg: (parent,args,ctx,info) => ctx.models.user.find({organisationID:args.id})
   },
   Mutation: {
