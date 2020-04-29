@@ -1,5 +1,5 @@
 extend type Query {
-  FolderProperties(data: GetFolderPropertyInput): [FolderProperty]
+  FolderProperties(id: ID!): [FolderProperty]
 }
 
 type FolderProperty {
@@ -18,6 +18,9 @@ extend type Mutation {
   updateFolderProperty(data: UpdateFolderPropertyInput!): FolderPropertyPayload!
 }
 
+type Subscription {
+  newFolderProperty: FolderProperty
+}
 input CreateFolderPropertyInput {
   name: String!
   type: String!

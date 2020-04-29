@@ -1,5 +1,6 @@
 const { GraphQLServer } = require("graphql-yoga");
 const mongoose = require("mongoose");
+const { mongoCreds } = require("./mongoDBCreds");
 // const organisation = require("./api/organisation");
 // const file = require("./api/file");
 // const lodash = require("lodash");
@@ -7,11 +8,17 @@ const mongoose = require("mongoose");
 
 const { makeExecutableSchema } = require("./api/index");
 
-mongoose.connect("mongodb://127.0.0.1:27017/trax_cloud", {
+// mongoose.connect("mongodb://127.0.0.1:27017/trax_cloud", {
+//   useNewUrlParser: true,
+//   useUnifiedTopology: true,
+//   useFindAndModify: false,
+//   useCreateIndex: true
+// });
+mongoose.connect(mongoCreds.database, {
   useNewUrlParser: true,
   useUnifiedTopology: true,
   useFindAndModify: false,
-  useCreateIndex: true
+  useCreateIndex: true,
 });
 
 const server = new GraphQLServer(
@@ -37,5 +44,5 @@ const server = new GraphQLServer(
 );
 
 module.exports = {
-  server
+  server,
 };

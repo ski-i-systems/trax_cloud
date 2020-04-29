@@ -1,11 +1,11 @@
 extend type Query {
-  Folder(data: GetFolderInput): Folder!
+  Folder(id: ID!): Folder!
   Folders: [Folder]
   #usersByOrg(id: String!): [User]!
 }
 
 type Folder {
-  id: ID
+  id: ID!
   name: String!
   createdAt: String
   updatedAt: String

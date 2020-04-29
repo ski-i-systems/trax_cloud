@@ -1,43 +1,22 @@
 const { getUserId } = require("../../utils/getUserId");
+ObjectId = require("mongodb").ObjectID;
+const CREATE_FOLDER_PROPERTY = "CREATE_FOLDER_PROPERTY";
 module.exports = {
   Query: {
-    //Get a single user by id, email or name
-    //If it's by name, as it's not unique, the name should be accompanied by the users organisationId
-    // Folder: async (parent, args, ctx, info) => {
-    //   return {
-    //     id: "12312",
-    //     name: "test",
-    //   };
-    // let { data } = args;
-    // let { id, name } = data;
-    // let folder;
-
-    //   const userId = getUserId(ctx.req);
-    //   user = await ctx.models.user.findUser(userId);
-
-    // let query;
-    // if (id) {
-    //   //Don't need organisation id here for the moment....
-    //   query = { /*organisationID: user.organisationID,*/ _id: id };
-    // } else if (email) {
-    //   query = {
-    //     /*organisationID: user.organisationID, */ email: email.toLowerCase()
-    //   };
-    // } else if (name && user !== undefined) {
-    //   query = { organisationID: user.organisationID, name: name };
-    // }
-
-    // return ctx.models.user.findOne(query);
-    // },
     FolderProperties: async (parent, args, ctx, info) => {
+      console.log("args", args);
       const userId = getUserId(ctx.req);
-      const { folderID } = args.data;
-      console.log('folderID', folderID);
+      console.log("userId", userId);
+      const folderID = args;
+      console.log("folderID", folderID);
       const user = await ctx.models.user.findUser(userId);
-      const { organistionID } = user;
-      console.log('organistionID', organistionID);
+      console.log("user", user);
+
       if (user) {
-        return ctx.models.folderProperty.find({ folderID, organistionID });
+        const props = await ctx.models.folderProperty.find({
+          folderID: ObjectId(folderID.id),
+        });
+        return props;
       }
     },
     //usersByOrg: (parent,args,ctx,info) => ctx.models.user.find({organisationID:args.id})
@@ -62,6 +41,9 @@ module.exports = {
         );
         console.log("folder", folderProperty);
 
+        ctx.pubSub.publish(CREATE_FOLDER_PROPERTY, {
+          newFolderProperty: folderProperty.folderProperty,
+        });
         return folderProperty;
       }
     },
@@ -83,9 +65,19 @@ module.exports = {
       //Should have a permissions check here along this chain....
 
       if (userId) {
-        const folderProperty = await ctx.models.folderProperty.deleteFolderProperty(data.id);
+        const folderProperty = await ctx.models.folderProperty.deleteFolderProperty(
+          data.id
+        );
         return { folderProperty };
       }
+    },
+  },
+  Subscription: {
+    newFolderProperty: {
+      subscribe(parent, args, ctx, info) {
+        const { pubSub } = ctx;
+        return pubSub.asyncIterator(CREATE_FOLDER_PROPERTY);
+      },
     },
   },
 };

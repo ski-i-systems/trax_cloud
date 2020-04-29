@@ -6,9 +6,9 @@ const folder = require("./folder");
 const folderProperty = require("./folderProperty");
 const user = require("./user");
 const note = require("./note");
-
+const {PubSub} = require("graphql-yoga");
 const aws = require("./aws");
-
+const pubSub = new PubSub();
 const makeExecutableSchema = () => {
   return {
     typeDefs: [
@@ -40,6 +40,7 @@ const makeExecutableSchema = () => {
         folder: folder.model,
         folderProperty: folderProperty.model,
       },
+      pubSub,
     }),
   };
 };

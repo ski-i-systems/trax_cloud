@@ -38,7 +38,7 @@ module.exports = {
       }
     },
     Folder: async (parent, args, ctx, info) => {
-      const folderId = args.data;
+      const folderId = args;
 
       const userId = getUserId(ctx.req);
       const user = await ctx.models.user.findUser(userId);
