@@ -21,7 +21,7 @@ module.exports = {
         query = { /*organisationID: user.organisationID,*/ _id: id };
       } else if (email) {
         query = {
-          /*organisationID: user.organisationID, */ email: email.toLowerCase()
+          /*organisationID: user.organisationID, */ email: email.toLowerCase(),
         };
       } else if (name && user !== undefined) {
         query = { organisationID: user.organisationID, name: name };
@@ -35,7 +35,7 @@ module.exports = {
 
       if (user)
         return ctx.models.user.find({ organisationID: user.organisationID });
-    }
+    },
     //usersByOrg: (parent,args,ctx,info) => ctx.models.user.find({organisationID:args.id})
   },
   Mutation: {
@@ -48,7 +48,7 @@ module.exports = {
       if (user) {
         const newUser = {
           ...data,
-          organisationID: user.organisationID
+          organisationID: user.organisationID,
         };
 
         const userAndToken = await ctx.models.user.createNewUser(newUser);
@@ -60,7 +60,7 @@ module.exports = {
       const { email, password } = args.data;
 
       const user = await ctx.models.user.findOne({
-        email: email.toLowerCase()
+        email: email.toLowerCase(),
       });
 
       if (!user) {
@@ -73,7 +73,7 @@ module.exports = {
       }
       return {
         user,
-        token: generateToken(user.id)
+        token: generateToken(user.id),
       };
     },
     updateUser: async (parent, args, ctx, info) => {
@@ -93,6 +93,6 @@ module.exports = {
       if (userId) {
         return await ctx.models.user.deleteUser(data.id);
       }
-    }
-  }
+    },
+  },
 };

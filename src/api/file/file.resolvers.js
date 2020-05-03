@@ -1,6 +1,6 @@
 const { getUserId } = require("../../utils/getUserId");
 const { getDateInNumbers } = require("../../utils/getDateInNumbers");
-
+ObjectId = require("mongodb").ObjectID;
 module.exports = {
   Query: {
     //FilesOld: (parent, args, ctx, info) => ctx.models.file.find({}),
@@ -155,6 +155,38 @@ module.exports = {
       } else if (!user) {
         throw new Error("Authentication Required");
       }
+    },
+    createFileS3: async (parent, args, ctx, info) => {
+      console.log("args", args);
+
+      const { folderId, storageType, filePath } = args.data;
+      console.log("storageType", folderId);
+
+      const userId = getUserId(ctx.req);
+      const user = await ctx.models.user.findOne({ _id: userId });
+      const folder = await ctx.models.folder.findOne({ _id: folderId });
+
+      if (user && folder) {
+        const file = await ctx.models.file.create({
+          creator: userId,
+          organisationID: user.organisationID,
+          storageType,
+          folderId,
+          folderFields: args.fields,
+          filePath,
+        });
+
+        // await file.uploadFileToAzure({
+        //   imgPath: filePath,
+        //   orgId: user.organisationID,
+        //   docType: documentType,
+        // });
+        console.log("the file is ", file);
+        return { file };
+      } else if (!user || !folder) {
+        throw new Error("Authentication Required");
+      }
+      return file;
     },
     updateFile: async (parent, args, { req, models }, info) => {
       const userId = getUserId(req);

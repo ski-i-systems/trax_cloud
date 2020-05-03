@@ -10,6 +10,7 @@ require('dotenv')
 // const NoteSchema = require("../../models/Note");
 
 const FieldSchema = new Schema({ 
+  folderPropertyId:{type:Schema.Types.ObjectId,ref:"FolderProperty"},
   key: String, 
   value: String, 
   dataType: { type:String, default:'string', enum:['string', 'currency', 'datetime', 'integer', 'boolean']} 
@@ -17,11 +18,11 @@ const FieldSchema = new Schema({
 
 const fileSchema = new Schema({
     creator: { type: Schema.Types.ObjectId, ref:"User"},
-    // organisation: { type: String, required: true },
     organisationID: { type: Schema.Types.ObjectId, ref: "Organisation" },
-    documentType: { type: String },
-    fields: [FieldSchema],
-    filePath: String
+    folderId: { type: Schema.Types.ObjectId,ref:"Folder" },
+    folderFields: [FieldSchema],
+    filePath: String,
+    storageType:String,
     // notes: [NoteSchema]
     
   },

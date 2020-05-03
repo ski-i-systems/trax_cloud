@@ -1,11 +1,13 @@
 extend type Query {
   FilesOld: [File]!
   Files(data: QueryFileInput!): [File]!
+  FilesS3(data: S3QueryFileInput): [File]
   File(id: String!): File!
 }
 
 extend type Mutation {
   createFile(data: CreateFileInput!, fields: [CreateFileTags]): FilePayload!
+  createFileS3(data: CreateFileInput!, fields: [CreateFileTags]): FilePayload!
   updateFile(
     _id: ID!
     data: CreateFileInput
@@ -23,14 +25,16 @@ type File {
   id: ID
   creator: String!
   organisationID: ID!
-  documentType: String
-  fields: [FieldTag]
+  folderId: ID!
+  folderFields: [FieldTag]
+  storageType: String
   filePath: String
   createdAt: String
   updatedAt: String
 }
 
 type FieldTag {
+  folderPropertyId: ID!
   key: String
   value: String
   dataType: String
@@ -46,7 +50,8 @@ input FieldTagSearch {
 }
 
 input CreateFileInput {
-  documentType: String
+  folderId: ID!
+  storageType: String
   filePath: String
 }
 
@@ -55,6 +60,9 @@ input QueryFileInput {
   documentType: String
   creatorId: String
   fields: [FieldTagSearch]
+}
+input S3QueryFileInput {
+  folderId: ID!
 }
 
 """
@@ -80,6 +88,7 @@ enum dataTypeEnum {
 }
 
 input CreateFileTags {
+  folderPropertyId: ID!
   key: String
   value: String
   dataType: dataTypeEnum
