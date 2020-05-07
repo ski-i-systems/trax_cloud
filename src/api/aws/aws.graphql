@@ -1,7 +1,18 @@
 extend type Query {
   URL(filename: String): s3Object!
+  PUTURL(data: [PutUrl]): [s3PutURL]!
 }
 
 type s3Object {
   url: String
+}
+type s3PutURL {
+  name: String
+  type: String
+  url: String
+}
+
+input PutUrl {
+  name: String
+  type: String
 }

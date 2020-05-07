@@ -4,13 +4,9 @@ const CREATE_FOLDER_PROPERTY = "CREATE_FOLDER_PROPERTY";
 module.exports = {
   Query: {
     FolderProperties: async (parent, args, ctx, info) => {
-      console.log("args", args);
       const userId = getUserId(ctx.req);
-      console.log("userId", userId);
       const folderID = args;
-      console.log("folderID", folderID);
       const user = await ctx.models.user.findUser(userId);
-      console.log("user", user);
 
       if (user) {
         const props = await ctx.models.folderProperty.find({

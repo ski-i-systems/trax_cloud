@@ -25,7 +25,7 @@ function generateGetUrl(Key) {
     const params = {
       Bucket,
       Key,
-      Expires: 120, // 2 minutes
+      Expires: 1200, // 2 minutes
     };
     // Note operation in this case is getObject
     s3.getSignedUrl("getObject", params, (err, url) => {
@@ -41,9 +41,13 @@ function generateGetUrl(Key) {
 
 // PUT URL Generator
 function generatePutUrl(Key, ContentType) {
+  console.log("ContentType", ContentType);
+  console.log("Key", Key);
+
   return new Promise((resolve, reject) => {
     // Note Bucket is retrieved from the env variable above.
     const params = { Bucket, Key, ContentType };
+    console.log("params", params);
     // Note operation in this case is putObject
     s3.getSignedUrl("putObject", params, function(err, url) {
       if (err) {

@@ -1,12 +1,30 @@
 const { getUserId } = require("../../utils/getUserId");
 const { getDateInNumbers } = require("../../utils/getDateInNumbers");
+const { generateGetUrl } = require("../../awsPresigner");
 ObjectId = require("mongodb").ObjectID;
 module.exports = {
   Query: {
     //FilesOld: (parent, args, ctx, info) => ctx.models.file.find({}),
     //Files should not expect organisation id to be passed into it,
     //it should get it from the user who should be logged in at this point.
+    S3Files: async (parent, args, ctx, info) => {
+      const folder = args.data;
+      const userId = getUserId(ctx.req);
+      const user = await ctx.models.user.findOne({ _id: userId });
 
+      //const url = await generateGetUrl(filename);
+      if (user) {
+        files = await ctx.models.file.find({ folderId: folder.folderId });
+
+        //not sure about below just
+        // files.forEach(async (file) => {
+        //   file.filePath= await generateGetUrl(file.fileName)
+            
+        // });
+  
+        return files;
+      } else throw new Error("Authentication Required");
+    },
     Files: async (parent, { data }, { req, models }, info) => {
       const userId = getUserId(req);
       const user = await models.user.findOne({ _id: userId });
@@ -159,7 +177,7 @@ module.exports = {
     createFileS3: async (parent, args, ctx, info) => {
       console.log("args", args);
 
-      const { folderId, storageType, filePath } = args.data;
+      const { folderId, fileName, storageType, filePath } = args.data;
       console.log("storageType", folderId);
 
       const userId = getUserId(ctx.req);
@@ -173,6 +191,7 @@ module.exports = {
           storageType,
           folderId,
           folderFields: args.fields,
+          fileName,
           filePath,
         });
 

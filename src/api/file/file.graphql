@@ -1,7 +1,7 @@
 extend type Query {
   FilesOld: [File]!
   Files(data: QueryFileInput!): [File]!
-  FilesS3(data: S3QueryFileInput): [File]
+  S3Files(data: S3QueryFileInput): [File]!
   File(id: String!): File!
 }
 
@@ -28,6 +28,7 @@ type File {
   folderId: ID!
   folderFields: [FieldTag]
   storageType: String
+  fileName:String!
   filePath: String
   createdAt: String
   updatedAt: String
@@ -53,6 +54,7 @@ input CreateFileInput {
   folderId: ID!
   storageType: String
   filePath: String
+  fileName:String
 }
 
 input QueryFileInput {
