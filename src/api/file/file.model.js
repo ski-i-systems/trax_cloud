@@ -69,4 +69,9 @@ fileSchema.methods.uploadFileToAzure = async function(input) {
     });
 };
 
+fileSchema.statics.findFiles = async ()=>{
+  
+}
+
+
 module.exports = mongoose.model("files", fileSchema);

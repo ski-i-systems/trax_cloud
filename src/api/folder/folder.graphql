@@ -11,6 +11,7 @@ type Folder {
   updatedAt: String
   organisationID: ID
   active: Boolean
+  folderProperties: [FolderProperty]
 }
 
 extend type Mutation {
@@ -29,7 +30,6 @@ input DeleteFolderInput {
 
 input GetFolderInput {
   id: ID!
-  
 }
 
 input UpdateFolderInput {

@@ -28,7 +28,7 @@ type File {
   folderId: ID!
   folderFields: [FieldTag]
   storageType: String
-  fileName:String!
+  fileName: String!
   filePath: String
   createdAt: String
   updatedAt: String
@@ -49,12 +49,17 @@ input FieldTagSearch {
   value: String!
   searchType: searchTypeEnum = equals
 }
+input FieldTagSearchS3 {
+  key: String!
+  value: String!
+
+}
 
 input CreateFileInput {
   folderId: ID!
   storageType: String
   filePath: String
-  fileName:String
+  fileName: String!
 }
 
 input QueryFileInput {
@@ -65,6 +70,7 @@ input QueryFileInput {
 }
 input S3QueryFileInput {
   folderId: ID!
+  fields: [FieldTagSearchS3]
 }
 
 """

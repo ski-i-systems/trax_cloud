@@ -1,10 +1,12 @@
 const mongoose = require("mongoose");
 const Schema = mongoose.Schema;
+require("../folderProperty/folderProperty.model");
 const folderSchema = new Schema(
   {
     organisationID: { type: Schema.Types.ObjectId, ref: "Organisation" },
     name: { type: String, required: true },
     active: { type: Boolean, default: true },
+    folderProperties: [{ type: Schema.Types.ObjectId, ref: "FolderProperty" }],
   },
   { timestamps: true }
 );
@@ -35,7 +37,7 @@ folderSchema.statics.createNewFolder = async function(folderDetails) {
   return { folder };
 };
 folderSchema.statics.findFolder = async (folderId, callback) => {
-  console.log('folderId model', folderId);
+  console.log("folderId model", folderId);
   const folder = mongoose.model("Folder", folderSchema);
   return await folder.findOne({ _id: folderId }, callback);
 };

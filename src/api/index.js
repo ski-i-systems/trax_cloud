@@ -2,11 +2,11 @@ const { merge } = require("lodash");
 
 const organisation = require("./organisation");
 const file = require("./file");
-const folder = require("./folder");
 const folderProperty = require("./folderProperty");
+const folder = require("./folder");
 const user = require("./user");
 const note = require("./note");
-const {PubSub} = require("graphql-yoga");
+const { PubSub } = require("graphql-yoga");
 const aws = require("./aws");
 const pubSub = new PubSub();
 const makeExecutableSchema = () => {
@@ -25,8 +25,8 @@ const makeExecutableSchema = () => {
       user.resolvers,
       organisation.resolvers,
       file.resolvers,
-      folder.resolvers,
       folderProperty.resolvers,
+      folder.resolvers,
       note.resolvers,
       aws.resolvers
     ),
@@ -37,8 +37,8 @@ const makeExecutableSchema = () => {
         organisation: organisation.model,
         file: file.model,
         note: note.model,
-        folder: folder.model,
         folderProperty: folderProperty.model,
+        folder: folder.model,
       },
       pubSub,
     }),

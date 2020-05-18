@@ -35,6 +35,7 @@ folderPropertySchema.statics.createNewFolderProperty = async function(
     .save()
     .then((fdr) => {
       folderProperty = fdr;
+      
     })
     .catch((err) => {
       throw new Error(err);

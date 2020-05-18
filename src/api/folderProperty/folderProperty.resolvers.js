@@ -35,7 +35,17 @@ module.exports = {
         const folderProperty = await ctx.models.folderProperty.createNewFolderProperty(
           newFolderProperty
         );
-        console.log("folder", folderProperty);
+        
+       await ctx.models.folder.updateOne(
+          { _id: folderProperty.folderProperty.folderID },
+          { $push: { folderProperties: folderProperty.folderProperty } }
+        );
+        // folder.folderPropertes.push(folderProperty);
+        // console.log("THE FOLDER IS", folder);
+        // const result = await ctx.models.folder
+        //   .findOne({ name: "Accounts" })
+        //   .populate("folderProperties");
+        // console.log("result", result);
 
         ctx.pubSub.publish(CREATE_FOLDER_PROPERTY, {
           newFolderProperty: folderProperty.folderProperty,

@@ -8,7 +8,7 @@ if (mongoose.connection.readyState === 0) {
       useNewUrlParser: true,
       useUnifiedTopology: true,
       useFindAndModify: false,
-      useCreateIndex: true
+      useCreateIndex: true,
     },
     function(err) {
       if (err) {

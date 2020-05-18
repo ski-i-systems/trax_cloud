@@ -7,21 +7,116 @@ module.exports = {
     //FilesOld: (parent, args, ctx, info) => ctx.models.file.find({}),
     //Files should not expect organisation id to be passed into it,
     //it should get it from the user who should be logged in at this point.
-    S3Files: async (parent, args, ctx, info) => {
-      const folder = args.data;
+    S3Files: async (parent, { data }, ctx, info) => {
+      const { folderId, fields } = data;
       const userId = getUserId(ctx.req);
       const user = await ctx.models.user.findOne({ _id: userId });
 
       //const url = await generateGetUrl(filename);
       if (user) {
-        files = await ctx.models.file.find({ folderId: folder.folderId });
+        let mongooseFilter = {};
+        // if (fields) {
+        //   console.log("fields is:", fields);
+
+        //   mongooseFilter.fields = { $all: [] };
+
+        //   let $eq, $lt, $gt, $lte, $gte;
+        //   for (let index = 0; index < fields.length; index++) {
+        //     const element = fields[index];
+        //     console.log("element", element);
+        //     let searchOperator = {};
+        //     let arrayVals = element.value.split("|");
+        //     switch (element.searchType) {
+        //       case "equals":
+        //         searchOperator = {
+        //           $elemMatch: {
+        //             key: element.key,
+        //             value: { $eq: element.value },
+        //           },
+        //         };
+        //         break;
+
+        //       case "notEquals":
+        //         searchOperator = {
+        //           $elemMatch: {
+        //             key: element.key,
+        //             value: { $neq: element.value },
+        //           },
+        //         };
+        //         break;
+
+        //       case "lessThan":
+        //         searchOperator = {
+        //           $elemMatch: {
+        //             key: element.key,
+        //             value: { $lt: element.value },
+        //           },
+        //         };
+        //         break;
+
+        //       case "greaterThan":
+        //         searchOperator = {
+        //           $elemMatch: {
+        //             key: element.key,
+        //             value: { $gt: element.value },
+        //           },
+        //         };
+        //         break;
+
+        //       case "lessThanOrEqual":
+        //         searchOperator = {
+        //           $elemMatch: {
+        //             key: element.key,
+        //             value: { $lte: element.value },
+        //           },
+        //         };
+        //         break;
+
+        //       case "greaterThanOrEqual":
+        //         searchOperator = {
+        //           $elemMatch: {
+        //             key: element.key,
+        //             value: { $gte: element.value },
+        //           },
+        //         };
+        //         break;
+
+        //       case "in":
+        //         searchOperator = {
+        //           $elemMatch: { key: element.key, value: { $in: arrayVals } },
+        //         };
+        //         break;
+
+        //       case "notIn":
+        //         searchOperator = {
+        //           $elemMatch: { key: element.key, value: { $nin: arrayVals } },
+        //         };
+        //         break;
+
+        //       default:
+        //         searchOperator = {
+        //           $elemMatch: {
+        //             key: element.key,
+        //             value: { $eq: element.value },
+        //           },
+        //         };
+        //         break;
+        //     }
+
+        //     mongooseFilter.fields.$all.push(searchOperator);
+        //   }
+        //   mongooseFilter.folderId = folderId;
+        // }
+        console.log("mongoosefilter: ", mongooseFilter);
+        mongooseFilter.folderId = folderId;
+        files = await ctx.models.file.find(mongooseFilter);
 
         //not sure about below just
         // files.forEach(async (file) => {
         //   file.filePath= await generateGetUrl(file.fileName)
-            
+
         // });
-  
+
         return files;
       } else throw new Error("Authentication Required");
     },

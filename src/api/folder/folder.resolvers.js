@@ -1,13 +1,17 @@
 const { getUserId } = require("../../utils/getUserId");
+const folderProperty = require("../folderProperty/folderProperty.model");
 module.exports = {
   Query: {
-
     Folders: async (parent, args, ctx, info) => {
       const userId = getUserId(ctx.req);
       const user = await ctx.models.user.findUser(userId);
 
       if (user) {
-        return ctx.models.folder.find({});
+        const result = await ctx.models.folder
+          .find({})
+          .populate({ path: "folderProperties", model: folderProperty });
+        console.log("result", result);
+        return result;
       }
     },
     Folder: async (parent, args, ctx, info) => {
@@ -17,7 +21,11 @@ module.exports = {
       const user = await ctx.models.user.findUser(userId);
 
       if (user) {
-        const folder = await ctx.models.folder.findFolder(folderId.id);
+        const folder = await ctx.models.folder
+          .findOne({ _id: folderId.id })
+          .populate({ path: "folderProperties", model: folderProperty });
+        // console.log("result", result);
+        // const folder = await ctx.models.folder.findFolder(folderId.id);
         return folder;
       }
     },
@@ -25,11 +33,10 @@ module.exports = {
   Mutation: {
     createFolder: async (parent, args, ctx, info) => {
       const { data } = args;
-     
+
       const userId = getUserId(ctx.req);
 
       const user = await ctx.models.user.findUser(userId);
-   
 
       if (user) {
         const newFolder = {
@@ -38,7 +45,6 @@ module.exports = {
         };
 
         const folder = await ctx.models.folder.createNewFolder(newFolder);
-    
 
         return folder;
       }
