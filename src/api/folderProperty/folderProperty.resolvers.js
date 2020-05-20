@@ -20,11 +20,10 @@ module.exports = {
   Mutation: {
     createFolderProperty: async (parent, args, ctx, info) => {
       const { data } = args;
-      console.log("data", data);
+
       const userId = getUserId(ctx.req);
 
       const user = await ctx.models.user.findUser(userId);
-      console.log("user", user);
 
       if (user) {
         const newFolderProperty = {
@@ -35,17 +34,11 @@ module.exports = {
         const folderProperty = await ctx.models.folderProperty.createNewFolderProperty(
           newFolderProperty
         );
-        
-       await ctx.models.folder.updateOne(
+
+        await ctx.models.folder.updateOne(
           { _id: folderProperty.folderProperty.folderID },
           { $push: { folderProperties: folderProperty.folderProperty } }
         );
-        // folder.folderPropertes.push(folderProperty);
-        // console.log("THE FOLDER IS", folder);
-        // const result = await ctx.models.folder
-        //   .findOne({ name: "Accounts" })
-        //   .populate("folderProperties");
-        // console.log("result", result);
 
         ctx.pubSub.publish(CREATE_FOLDER_PROPERTY, {
           newFolderProperty: folderProperty.folderProperty,

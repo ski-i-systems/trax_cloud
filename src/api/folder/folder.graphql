@@ -11,6 +11,7 @@ type Folder {
   updatedAt: String
   organisationID: ID
   active: Boolean
+  approval: Boolean
   folderProperties: [FolderProperty]
 }
 
@@ -22,6 +23,7 @@ extend type Mutation {
 
 input CreateFolderInput {
   name: String!
+  approval: Boolean
 }
 
 input DeleteFolderInput {

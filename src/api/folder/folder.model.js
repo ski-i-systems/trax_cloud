@@ -7,6 +7,7 @@ const folderSchema = new Schema(
     name: { type: String, required: true },
     active: { type: Boolean, default: true },
     folderProperties: [{ type: Schema.Types.ObjectId, ref: "FolderProperty" }],
+    approval: { type: Boolean, default: false },
   },
   { timestamps: true }
 );
