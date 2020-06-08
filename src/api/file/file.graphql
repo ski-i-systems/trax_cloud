@@ -52,7 +52,7 @@ input FieldTagSearch {
 input FieldTagSearchS3 {
   key: String!
   value: String!
-
+  searchType: searchTypeEnum = equals
 }
 
 input CreateFileInput {

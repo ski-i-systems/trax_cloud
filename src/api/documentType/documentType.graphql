@@ -1,0 +1,23 @@
+extend type Query {  
+  DocumentTypes: [DocumentType]!
+  DocumentType(id: String!): DocumentType!
+}
+
+extend type Mutation {
+  CreateDocumentType(data: CreateDocumentTypeInput!): DocumentTypePayload!
+  UpdateDocumentType(data: CreateDocumentTypeInput!): DocumentTypePayload!
+}
+
+type DocumentType {
+    id: ID
+    name: String!
+}
+
+input CreateDocumentTypeInput {
+    name: String!
+}
+
+type DocumentTypePayload {
+    documentType: DocumentType!
+}
+

@@ -14,6 +14,9 @@ const { makeExecutableSchema } = require("./api/index");
 //   useFindAndModify: false,
 //   useCreateIndex: true
 // });
+
+console.log('database is ', mongoCreds.database);
+
 mongoose.connect(mongoCreds.database, {
   useNewUrlParser: true,
   useUnifiedTopology: true,

@@ -12,103 +12,110 @@ module.exports = {
       const userId = getUserId(ctx.req);
       const user = await ctx.models.user.findOne({ _id: userId });
 
-      //const url = await generateGetUrl(filename);
       if (user) {
         let mongooseFilter = {};
-        // if (fields) {
-        //   console.log("fields is:", fields);
 
-        //   mongooseFilter.fields = { $all: [] };
+        if(folderId)
+        {
+          mongooseFilter.folderId = folderId;
+        }
 
-        //   let $eq, $lt, $gt, $lte, $gte;
-        //   for (let index = 0; index < fields.length; index++) {
-        //     const element = fields[index];
-        //     console.log("element", element);
-        //     let searchOperator = {};
-        //     let arrayVals = element.value.split("|");
-        //     switch (element.searchType) {
-        //       case "equals":
-        //         searchOperator = {
-        //           $elemMatch: {
-        //             key: element.key,
-        //             value: { $eq: element.value },
-        //           },
-        //         };
-        //         break;
+        if (fields) {
+          console.log("fields is:", fields);
 
-        //       case "notEquals":
-        //         searchOperator = {
-        //           $elemMatch: {
-        //             key: element.key,
-        //             value: { $neq: element.value },
-        //           },
-        //         };
-        //         break;
+          mongooseFilter.folderFields = { $all: [] };
 
-        //       case "lessThan":
-        //         searchOperator = {
-        //           $elemMatch: {
-        //             key: element.key,
-        //             value: { $lt: element.value },
-        //           },
-        //         };
-        //         break;
+          let $eq, $lt, $gt, $lte, $gte;
+          for (let index = 0; index < fields.length; index++) {
+            const element = fields[index];
 
-        //       case "greaterThan":
-        //         searchOperator = {
-        //           $elemMatch: {
-        //             key: element.key,
-        //             value: { $gt: element.value },
-        //           },
-        //         };
-        //         break;
+            let searchOperator = {};
+            let arrayVals = element.value.split("|");
 
-        //       case "lessThanOrEqual":
-        //         searchOperator = {
-        //           $elemMatch: {
-        //             key: element.key,
-        //             value: { $lte: element.value },
-        //           },
-        //         };
-        //         break;
+            
+            switch (element.searchType) {
+              case "equals":
+                searchOperator = {
+                  $elemMatch: {
+                    key: element.key,
+                    value: { $eq: element.value },
+                  },
+                };
+                break;
 
-        //       case "greaterThanOrEqual":
-        //         searchOperator = {
-        //           $elemMatch: {
-        //             key: element.key,
-        //             value: { $gte: element.value },
-        //           },
-        //         };
-        //         break;
+              case "notEquals":
+                searchOperator = {
+                  $elemMatch: {
+                    key: element.key,
+                    value: { $neq: element.value },
+                  },
+                };
+                break;
 
-        //       case "in":
-        //         searchOperator = {
-        //           $elemMatch: { key: element.key, value: { $in: arrayVals } },
-        //         };
-        //         break;
+              case "lessThan":
+                searchOperator = {
+                  $elemMatch: {
+                    key: element.key,
+                    value: { $lt: element.value },
+                  },
+                };
+                break;
 
-        //       case "notIn":
-        //         searchOperator = {
-        //           $elemMatch: { key: element.key, value: { $nin: arrayVals } },
-        //         };
-        //         break;
+              case "greaterThan":
+                searchOperator = {
+                  $elemMatch: {
+                    key: element.key,
+                    value: { $gt: element.value },
+                  },
+                };
+                break;
 
-        //       default:
-        //         searchOperator = {
-        //           $elemMatch: {
-        //             key: element.key,
-        //             value: { $eq: element.value },
-        //           },
-        //         };
-        //         break;
-        //     }
+              case "lessThanOrEqual":
+                searchOperator = {
+                  $elemMatch: {
+                    key: element.key,
+                    value: { $lte: element.value },
+                  },
+                };
+                break;
 
-        //     mongooseFilter.fields.$all.push(searchOperator);
-        //   }
-        //   mongooseFilter.folderId = folderId;
-        // }
+              case "greaterThanOrEqual":
+                searchOperator = {
+                  $elemMatch: {
+                    key: element.key,
+                    value: { $gte: element.value },
+                  },
+                };
+                break;
+
+              case "in":
+                searchOperator = {
+                  $elemMatch: { key: element.key, value: { $in: arrayVals } },
+                };
+                break;
+
+              case "notIn":
+                searchOperator = {
+                  $elemMatch: { key: element.key, value: { $nin: arrayVals } },
+                };
+                break;
+
+              default:
+                searchOperator = {
+                  $elemMatch: {
+                    key: element.key,
+                    value: { $eq: element.value },
+                  },
+                };
+                break;
+            }
+
+            mongooseFilter.folderFields.$all.push(searchOperator);
+          }
+          //mongooseFilter.folderId = folderId;
+        }
         console.log("mongoosefilter: ", mongooseFilter);
-        mongooseFilter.folderId = folderId;
+        //mongooseFilter.folderId = folderId;
         files = await ctx.models.file.find(mongooseFilter);
 
         //not sure about below just
@@ -120,6 +127,8 @@ module.exports = {
         return files;
       } else throw new Error("Authentication Required");
     },
+
+
     Files: async (parent, { data }, { req, models }, info) => {
       const userId = getUserId(req);
       const user = await models.user.findOne({ _id: userId });
